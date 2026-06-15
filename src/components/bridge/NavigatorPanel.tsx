@@ -21,53 +21,47 @@ export function NavigatorPanel() {
       : `You have ${active.length} active missions. Pick one flagship for the next 90 minutes.`;
 
   return (
-    <GlassPanel eyebrow="Navigator Signal" title={`${name}`} variant="hero">
-      <div className="flex items-start gap-4">
+    <GlassPanel eyebrow={`Navigator · ${name}`} title="Standing by, Captain." variant="hero">
+      <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:items-start sm:text-left">
         <motion.div
           className="relative shrink-0"
           animate={{ y: [0, -3, 0] }}
           transition={{ duration: 5, ease: "easeInOut", repeat: Infinity }}
         >
-          {/* outer breathing halo */}
           <div
-            className="pointer-events-none absolute -inset-3 rounded-full"
+            className="pointer-events-none absolute -inset-5 rounded-full"
             style={{
               background:
                 "radial-gradient(circle, oklch(0.78 0.18 215 / 0.55), transparent 70%)",
-              filter: "blur(10px)",
+              filter: "blur(14px)",
               animation: "core-pulse 4s ease-in-out infinite",
             }}
           />
-          {/* spinning conic ring */}
           <motion.div
-            className="pointer-events-none absolute -inset-1.5 rounded-full"
+            className="pointer-events-none absolute -inset-2 rounded-full"
             style={{
               background:
                 "conic-gradient(from 0deg, transparent 0deg, oklch(0.88 0.18 215 / 0.85) 40deg, transparent 110deg, transparent 360deg)",
-              WebkitMask:
-                "radial-gradient(circle, transparent 56%, #000 58%)",
+              WebkitMask: "radial-gradient(circle, transparent 56%, #000 58%)",
               mask: "radial-gradient(circle, transparent 56%, #000 58%)",
             }}
             animate={{ rotate: 360 }}
             transition={{ duration: 7, ease: "linear", repeat: Infinity }}
           />
-          {/* avatar */}
-          <div className="relative h-20 w-20 overflow-hidden rounded-full ring-2 ring-primary/60 shadow-[0_0_24px_var(--primary)]">
+          <div className="relative h-32 w-32 overflow-hidden rounded-full ring-2 ring-primary/60 shadow-[0_0_28px_var(--primary)]">
             <img
               src={navigatorAsset.url}
               alt={name}
               className="h-full w-full object-cover"
             />
-            {/* scanline overlay */}
             <div
               className="pointer-events-none absolute inset-0"
               style={{
                 backgroundImage:
-                  "repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, oklch(0.85 0.18 215 / 0.18) 2px, oklch(0.85 0.18 215 / 0.18) 3px)",
+                  "repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, oklch(0.85 0.18 215 / 0.16) 2px, oklch(0.85 0.18 215 / 0.16) 3px)",
                 mixBlendMode: "screen",
               }}
             />
-            {/* sweeping light bar */}
             <motion.div
               className="pointer-events-none absolute inset-y-0 w-1/2"
               style={{
@@ -77,47 +71,46 @@ export function NavigatorPanel() {
               animate={{ x: ["-100%", "220%"] }}
               transition={{ duration: 4.5, ease: "linear", repeat: Infinity, repeatDelay: 2 }}
             />
-            {/* cyan color wash */}
             <div
               className="pointer-events-none absolute inset-0"
               style={{
                 background:
-                  "linear-gradient(180deg, oklch(0.55 0.18 215 / 0.15), oklch(0.30 0.20 280 / 0.15))",
+                  "linear-gradient(180deg, oklch(0.55 0.18 215 / 0.12), oklch(0.30 0.20 280 / 0.12))",
                 mixBlendMode: "color",
               }}
             />
           </div>
-          {/* status dot */}
           <span
-            className="absolute right-0 bottom-0 h-3 w-3 rounded-full bg-primary ring-2 ring-background shadow-[0_0_10px_var(--primary)]"
+            className="absolute right-1 bottom-1 h-3.5 w-3.5 rounded-full bg-primary ring-2 ring-background shadow-[0_0_10px_var(--primary)]"
             style={{ animation: "signal-blink 2.4s ease-in-out infinite" }}
           />
         </motion.div>
 
         <div className="min-w-0 flex-1">
-          <p className="hud-text text-primary">Standing by, {callSign}.</p>
-          <p className="mt-2 text-sm leading-relaxed text-foreground/90">
+          <p className="hud-text text-primary">Calm channel · {callSign}</p>
+          <p className="mt-3 text-[15px] leading-relaxed text-foreground/90">
             “{recommendation}”
           </p>
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-2 gap-2">
+
+      <div className="mt-6 grid grid-cols-2 gap-3">
         <Button
           variant="outline"
-          size="sm"
+          size="default"
           className="border-primary/30 bg-primary/10 text-foreground hover:bg-primary/20"
           onClick={() => window.dispatchEvent(new CustomEvent("blueverse:quick-capture"))}
         >
-          <MessageCircle className="mr-1.5 h-4 w-4" />
+          <MessageCircle className="mr-2 h-4 w-4" />
           Brief Me
         </Button>
         <Button
           variant="outline"
-          size="sm"
+          size="default"
           className="border-accent/30 bg-accent/10 text-foreground hover:bg-accent/20"
           onClick={() => window.dispatchEvent(new CustomEvent("blueverse:quick-capture"))}
         >
-          <Sparkles className="mr-1.5 h-4 w-4" />
+          <Sparkles className="mr-2 h-4 w-4" />
           Log Signal
         </Button>
       </div>

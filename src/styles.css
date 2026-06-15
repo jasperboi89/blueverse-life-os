@@ -130,6 +130,8 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
     background-image: var(--gradient-nebula);
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
@@ -208,9 +210,9 @@
 
 @utility hud-text {
   font-family: var(--font-display);
-  letter-spacing: 0.18em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: oklch(0.82 0.10 215);
 }
 

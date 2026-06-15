@@ -5,8 +5,9 @@ import { useMissions } from "@/stores/missions";
 import { useMomentum } from "@/stores/momentum";
 
 export function BridgeStatusBar({ callSign }: { callSign: string }) {
-  const [now, setNow] = useState(() => new Date());
+  const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
+    setNow(new Date());
     const i = setInterval(() => setNow(new Date()), 30_000);
     return () => clearInterval(i);
   }, []);
@@ -14,17 +15,21 @@ export function BridgeStatusBar({ callSign }: { callSign: string }) {
   const recent = useMomentum((s) => s.events.length);
 
   return (
-    <div className="glass-panel holo-border relative overflow-hidden px-4 py-3 sm:px-5">
-      <div className="grid grid-cols-1 items-center gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+    <div className="glass-panel holo-border relative overflow-hidden px-6 py-5 sm:px-8">
+      <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
         <div className="min-w-0">
-          <p className="hud-text flex items-center gap-2">
+          <p className="hud-text flex items-center gap-2.5">
             <span
               className="inline-block h-2 w-2 rounded-full bg-primary shadow-[0_0_10px_var(--primary)]"
               style={{ animation: "signal-blink 2.4s ease-in-out infinite" }}
             />
-            BRIDGE ONLINE · STARDATE {format(now, "yyyy.MM.dd")} · {format(now, "HH:mm")}
+            <span suppressHydrationWarning>
+              {now
+                ? `Bridge Online · Stardate ${format(now, "yyyy.MM.dd")} · ${format(now, "HH:mm")}`
+                : "Bridge Online"}
+            </span>
           </p>
-          <p className="mt-1 truncate font-display text-2xl text-gradient-flare sm:text-3xl">
+          <p className="mt-2 truncate font-display text-3xl text-gradient-flare sm:text-4xl">
             Welcome aboard, {callSign}.
           </p>
         </div>
@@ -43,10 +48,10 @@ function Pill({
   icon: Icon, label, value,
 }: { icon: typeof Radio; label: string; value: string }) {
   return (
-    <div className="hidden items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 sm:flex">
-      <Icon className="h-3.5 w-3.5 text-primary" />
+    <div className="hidden items-center gap-2.5 rounded-full border border-primary/25 bg-primary/5 px-4 py-1.5 sm:flex">
+      <Icon className="h-4 w-4 text-primary" />
       <span className="hud-text">{label}</span>
-      <span className="font-display text-xs text-foreground">{value}</span>
+      <span className="font-display text-sm text-foreground">{value}</span>
     </div>
   );
 }

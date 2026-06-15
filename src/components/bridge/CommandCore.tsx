@@ -59,14 +59,26 @@ function TickMarks({ r, count = 60 }: { r: number; count?: number }) {
 
 export function CommandCore({ mission, finance, focus, directive }: Props) {
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[560px]">
+    <div className="relative mx-auto aspect-square w-full max-w-[640px]">
       {/* Ambient halo */}
       <div
         className="pointer-events-none absolute inset-0 rounded-full"
         style={{
           background:
-            "radial-gradient(circle at center, oklch(0.55 0.22 270 / 0.35), transparent 60%)",
-          filter: "blur(20px)",
+            "radial-gradient(circle at center, oklch(0.55 0.22 270 / 0.40), transparent 65%)",
+          filter: "blur(28px)",
+        }}
+      />
+      {/* Faint particle dust — static for SSR safety */}
+      <div
+        className="pointer-events-none absolute inset-0 rounded-full opacity-50"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 20% 30%, oklch(0.95 0.05 210 / 0.6) 0.5px, transparent 1px)," +
+            "radial-gradient(circle at 70% 60%, oklch(0.85 0.10 210 / 0.5) 0.5px, transparent 1px)," +
+            "radial-gradient(circle at 40% 80%, oklch(0.78 0.20 290 / 0.5) 0.5px, transparent 1px)," +
+            "radial-gradient(circle at 85% 20%, oklch(0.95 0.05 210 / 0.5) 0.5px, transparent 1px)",
+          backgroundSize: "120px 120px, 180px 180px, 140px 140px, 200px 200px",
         }}
       />
 
@@ -130,19 +142,40 @@ export function CommandCore({ mission, finance, focus, directive }: Props) {
           <animate attributeName="r" values="108;116;108" dur="5s" repeatCount="indefinite" />
         </circle>
 
-        {/* Vessel silhouette — stylized arrowhead echoing BlueVerse mark */}
+        {/* Holographic personal vessel — elegant arrow-craft with swept wings & engine glow */}
         <g transform="translate(250 250)">
-          <g opacity="0.95">
-            <path
-              d="M 0 -78 L 46 60 L 0 30 L -46 60 Z"
-              fill="url(#vessel-grad)"
-              stroke="oklch(0.95 0.08 210)"
-              strokeWidth="1"
-              style={{ filter: "drop-shadow(0 0 14px oklch(0.78 0.18 215 / 0.8))" }}
-            />
-            <path d="M 0 -78 L 0 30" stroke="oklch(0.98 0.05 210)" strokeWidth="0.8" opacity="0.7" />
-            <circle cx="0" cy="-10" r="4" fill="oklch(0.98 0.05 210)" />
-          </g>
+          {/* engine trail glow */}
+          <ellipse cx="0" cy="68" rx="22" ry="40" fill="oklch(0.78 0.18 215 / 0.35)" style={{ filter: "blur(8px)" }} />
+          <ellipse cx="0" cy="58" rx="10" ry="22" fill="oklch(0.95 0.08 210 / 0.55)" style={{ filter: "blur(4px)" }} />
+          {/* swept wings */}
+          <path
+            d="M -78 32 Q -40 28 -14 12 L -14 36 Q -42 44 -78 50 Z"
+            fill="url(#vessel-grad)" opacity="0.55"
+            stroke="oklch(0.88 0.10 210 / 0.7)" strokeWidth="0.8"
+          />
+          <path
+            d="M 78 32 Q 40 28 14 12 L 14 36 Q 42 44 78 50 Z"
+            fill="url(#vessel-grad)" opacity="0.55"
+            stroke="oklch(0.88 0.10 210 / 0.7)" strokeWidth="0.8"
+          />
+          {/* fuselage — slim arrowhead */}
+          <path
+            d="M 0 -86 L 18 6 L 14 44 L 0 56 L -14 44 L -18 6 Z"
+            fill="url(#vessel-grad)"
+            stroke="oklch(0.96 0.08 210)" strokeWidth="1"
+            style={{ filter: "drop-shadow(0 0 14px oklch(0.78 0.18 215 / 0.85))" }}
+          />
+          {/* cockpit canopy */}
+          <ellipse cx="0" cy="-18" rx="5" ry="14" fill="oklch(0.95 0.08 210)" opacity="0.9" />
+          {/* center spine */}
+          <path d="M 0 -86 L 0 56" stroke="oklch(1 0 0 / 0.5)" strokeWidth="0.6" />
+          {/* wing tip lights */}
+          <circle cx="-78" cy="44" r="2.2" fill="oklch(0.95 0.08 210)">
+            <animate attributeName="opacity" values="0.4;1;0.4" dur="2.4s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="78" cy="44" r="2.2" fill="oklch(0.78 0.22 295)">
+            <animate attributeName="opacity" values="1;0.4;1" dur="2.4s" repeatCount="indefinite" />
+          </circle>
         </g>
 
         {/* Inner HUD ring */}
