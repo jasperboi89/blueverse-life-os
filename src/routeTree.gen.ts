@@ -9,13 +9,61 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TimelineRouteImport } from './routes/timeline'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as ObservatoryRouteImport } from './routes/observatory'
 import { Route as MissionsRouteImport } from './routes/missions'
+import { Route as KnowledgeRouteImport } from './routes/knowledge'
+import { Route as FinanceRouteImport } from './routes/finance'
+import { Route as ConstitutionRouteImport } from './routes/constitution'
+import { Route as CommunicationsRouteImport } from './routes/communications'
+import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MissionsIdRouteImport } from './routes/missions.$id'
 
+const TimelineRoute = TimelineRouteImport.update({
+  id: '/timeline',
+  path: '/timeline',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ObservatoryRoute = ObservatoryRouteImport.update({
+  id: '/observatory',
+  path: '/observatory',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MissionsRoute = MissionsRouteImport.update({
   id: '/missions',
   path: '/missions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KnowledgeRoute = KnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceRoute = FinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConstitutionRoute = ConstitutionRouteImport.update({
+  id: '/constitution',
+  path: '/constitution',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunicationsRoute = CommunicationsRouteImport.update({
+  id: '/communications',
+  path: '/communications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArchiveRoute = ArchiveRouteImport.update({
+  id: '/archive',
+  path: '/archive',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -31,40 +79,162 @@ const MissionsIdRoute = MissionsIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/archive': typeof ArchiveRoute
+  '/communications': typeof CommunicationsRoute
+  '/constitution': typeof ConstitutionRoute
+  '/finance': typeof FinanceRoute
+  '/knowledge': typeof KnowledgeRoute
   '/missions': typeof MissionsRouteWithChildren
+  '/observatory': typeof ObservatoryRoute
+  '/settings': typeof SettingsRoute
+  '/timeline': typeof TimelineRoute
   '/missions/$id': typeof MissionsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/archive': typeof ArchiveRoute
+  '/communications': typeof CommunicationsRoute
+  '/constitution': typeof ConstitutionRoute
+  '/finance': typeof FinanceRoute
+  '/knowledge': typeof KnowledgeRoute
   '/missions': typeof MissionsRouteWithChildren
+  '/observatory': typeof ObservatoryRoute
+  '/settings': typeof SettingsRoute
+  '/timeline': typeof TimelineRoute
   '/missions/$id': typeof MissionsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/archive': typeof ArchiveRoute
+  '/communications': typeof CommunicationsRoute
+  '/constitution': typeof ConstitutionRoute
+  '/finance': typeof FinanceRoute
+  '/knowledge': typeof KnowledgeRoute
   '/missions': typeof MissionsRouteWithChildren
+  '/observatory': typeof ObservatoryRoute
+  '/settings': typeof SettingsRoute
+  '/timeline': typeof TimelineRoute
   '/missions/$id': typeof MissionsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/missions' | '/missions/$id'
+  fullPaths:
+    | '/'
+    | '/archive'
+    | '/communications'
+    | '/constitution'
+    | '/finance'
+    | '/knowledge'
+    | '/missions'
+    | '/observatory'
+    | '/settings'
+    | '/timeline'
+    | '/missions/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/missions' | '/missions/$id'
-  id: '__root__' | '/' | '/missions' | '/missions/$id'
+  to:
+    | '/'
+    | '/archive'
+    | '/communications'
+    | '/constitution'
+    | '/finance'
+    | '/knowledge'
+    | '/missions'
+    | '/observatory'
+    | '/settings'
+    | '/timeline'
+    | '/missions/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/archive'
+    | '/communications'
+    | '/constitution'
+    | '/finance'
+    | '/knowledge'
+    | '/missions'
+    | '/observatory'
+    | '/settings'
+    | '/timeline'
+    | '/missions/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ArchiveRoute: typeof ArchiveRoute
+  CommunicationsRoute: typeof CommunicationsRoute
+  ConstitutionRoute: typeof ConstitutionRoute
+  FinanceRoute: typeof FinanceRoute
+  KnowledgeRoute: typeof KnowledgeRoute
   MissionsRoute: typeof MissionsRouteWithChildren
+  ObservatoryRoute: typeof ObservatoryRoute
+  SettingsRoute: typeof SettingsRoute
+  TimelineRoute: typeof TimelineRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/timeline': {
+      id: '/timeline'
+      path: '/timeline'
+      fullPath: '/timeline'
+      preLoaderRoute: typeof TimelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/observatory': {
+      id: '/observatory'
+      path: '/observatory'
+      fullPath: '/observatory'
+      preLoaderRoute: typeof ObservatoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/missions': {
       id: '/missions'
       path: '/missions'
       fullPath: '/missions'
       preLoaderRoute: typeof MissionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/knowledge': {
+      id: '/knowledge'
+      path: '/knowledge'
+      fullPath: '/knowledge'
+      preLoaderRoute: typeof KnowledgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance': {
+      id: '/finance'
+      path: '/finance'
+      fullPath: '/finance'
+      preLoaderRoute: typeof FinanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/constitution': {
+      id: '/constitution'
+      path: '/constitution'
+      fullPath: '/constitution'
+      preLoaderRoute: typeof ConstitutionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/communications': {
+      id: '/communications'
+      path: '/communications'
+      fullPath: '/communications'
+      preLoaderRoute: typeof CommunicationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/archive': {
+      id: '/archive'
+      path: '/archive'
+      fullPath: '/archive'
+      preLoaderRoute: typeof ArchiveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -98,7 +268,15 @@ const MissionsRouteWithChildren = MissionsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ArchiveRoute: ArchiveRoute,
+  CommunicationsRoute: CommunicationsRoute,
+  ConstitutionRoute: ConstitutionRoute,
+  FinanceRoute: FinanceRoute,
+  KnowledgeRoute: KnowledgeRoute,
   MissionsRoute: MissionsRouteWithChildren,
+  ObservatoryRoute: ObservatoryRoute,
+  SettingsRoute: SettingsRoute,
+  TimelineRoute: TimelineRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
