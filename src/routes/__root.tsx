@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -118,19 +119,25 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isBridge = pathname === "/";
 
   return (
     <QueryClientProvider client={queryClient}>
       <StoreBoot />
       <NebulaBackground />
       <div className="relative min-h-screen">
-        <header className="fixed top-3 right-3 z-30 hidden sm:block">
-          <NavigatorPresence />
-        </header>
-        <main className="mx-auto w-full max-w-7xl px-3 pt-4 pb-32 sm:px-6 sm:pt-6">
-          <div className="sm:hidden mb-4">
+        {!isBridge && (
+          <header className="fixed top-3 right-3 z-30 hidden sm:block">
             <NavigatorPresence />
-          </div>
+          </header>
+        )}
+        <main className="mx-auto w-full max-w-7xl px-3 pt-4 pb-36 sm:px-6 sm:pt-6">
+          {!isBridge && (
+            <div className="sm:hidden mb-4">
+              <NavigatorPresence />
+            </div>
+          )}
           <Outlet />
         </main>
         <QuickCapture />
@@ -140,3 +147,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
