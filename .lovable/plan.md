@@ -1,97 +1,101 @@
-# Bridge Redesign — Cinematic Command Deck
+# Bridge v3 — Cinematic Command Lounge
 
-Replace the cramped 12-column HUD with a spacious, premium cockpit. Keep all routes, stores, data, and existing panel components — only recompose the Bridge page, upsize the hero, and tune typography/spacing for cinematic calm.
+Throw away the HUD cockpit. Rebuild the Bridge page as a calm, spacious, Apple-Vision-Pro-grade command lounge. Keep every route, store, data shape, and panel component — only the Bridge composition and a few visual primitives change.
 
-## Layout (full-width, breathing)
+## Layout (exactly 5 sections above the dock)
 
 ```text
-┌─────────────────────────────────────────────────────────────┐
-│  STATUS BAR  (slim, full-width, large readable time/call)   │
-├──────────────┬──────────────────────────────┬───────────────┤
-│ LEFT (3/12)  │   HERO CENTERPIECE (6/12)    │ RIGHT (3/12)  │
-│              │                              │               │
-│ Flagship     │   Holographic Vessel         │ Navigator     │
-│ Mission      │   + Command Core glow        │ Liam          │
-│              │                              │ (portrait)    │
-│ Financial    │   3 large metric rings:      │               │
-│ Weather      │   Mission · Finance · Focus  │ Mission       │
-│              │                              │ Field         │
-│              │   Dynamic directive line     │               │
-├──────────────┴──────────────────────────────┴───────────────┤
-│  LOWER DECK (3 wide panels)                                 │
-│  Momentum Stream  │  Timeline Horizon  │  Archive Echoes    │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│ 1. CINEMATIC HEADER                                          │
+│    "Welcome aboard, Captain."  ·  Stardate · Local time      │
+│    Chips: Vessel · Signal · Missions · Momentum              │
+├──────────────────────────────────────────────────────────────┤
+│ 2. HERO — Holographic Personal Vessel                        │
+│    Nebula bloom · floating starship · glass overlay          │
+│    Directive: "Course set: Build Six-Month Runway"           │
+│    [ Mission Progress ] [ Financial Health ] [ Focus ]       │
+├───────────────────────────┬──────────────────────────────────┤
+│ 3. LEFT CONSOLE           │ 4. RIGHT CONSOLE                 │
+│    Active Flagship        │    Navigator · Liam              │
+│    Financial Weather      │    Mission Field                 │
+├───────────────────────────┴──────────────────────────────────┤
+│ 5. LOWER DECK                                                │
+│    Momentum Stream · Timeline Horizon · Archive Echoes       │
+└──────────────────────────────────────────────────────────────┘
                   [ Command Dock — fixed, glassy ]
 ```
 
-Exactly 6 main panels above the dock + hero + status bar. Generous gaps (`gap-8`), generous padding (`p-8`), max width ~1680px centered with side breathing room.
+`max-w-[1680px]`, `px-10`, `gap-10`, `pb-32` so the dock never overlaps.
 
-## Hero Centerpiece (biggest change)
+## Hero — the centerpiece
 
-- Hero panel grows to ~640px tall on desktop (currently ~520).
-- Replace triangle vessel with an elegant **holographic personal ship**: layered SVG — slim arrowhead fuselage, swept wings, twin engine glow trails, soft cyan rim-light, parallax floating (`y: [0,-6,0]`, 6s).
-- Behind it: a **soft command core** — large radial bloom (cyan→violet), slow-rotating concentric rings, faint particle dust (CSS, no canvas to avoid hydration mismatch).
-- 3 metric rings move **below** the vessel as larger, readable cards (not tiny corners): each ~140px ring with big numeric center (32px), label below (13px caps).
-- Directive line below rings: large serif/display, ~22px, e.g. _"Course set: {flagship name}"_ or empty-state _"Awaiting first flagship. Set your course."_
+- Remove `CommandCore` rings/ticks/radar entirely from the Bridge.
+- New component `CinematicHero` (replaces `CommandCore`'s slot):
+  - Soft layered nebula bloom (radial gradients, no canvas) — cyan top-left, violet bottom-right, deep navy base.
+  - Subtle parallax starfield (CSS background, two layers drifting slowly).
+  - New `HoloVessel.tsx` SVG: a slim personal starship — long fuselage, cockpit canopy, swept delta wings, twin engine nacelles with cyan glow plumes, soft rim-light, gentle 6s float + 12s yaw. Not a triangle, not an arrow, not an icon.
+  - Translucent "command glass" plate behind the directive line.
+  - Directive: large display type (~28px), e.g. _"Course set: {flagship.name}"_ — fallback _"Awaiting your first flagship."_
+  - Three large metric cards in a row beneath: **Mission Progress · Financial Health · Focus**. Each ~180px tall: big number (44px), label (14px, sentence case), thin progress bar, one-line context.
 
-## Panels (recompose, keep components)
+## Header (replaces `BridgeStatusBar`)
 
-Left console: `FlagshipPanel`, `FinancialWeatherPanel`. (Drop `SectorPulsePanel` from first screen — moves to Universe page; keeps panel count at 6.)
-Right console: `NavigatorPanel` (enlarged), Mission Field (inline list from index).
-Lower deck: Momentum Stream (`MomentumFeed`), Timeline Horizon, `ArchiveEchoesPanel`.
-Remove `UniverseStatePanel` from Bridge (link to it instead from status bar).
+- One line greeting: `Welcome aboard, Captain {callSign}.` (display font, ~22px).
+- Second line: Stardate `2026.166` · local time (mount-gated, no SSR mismatch).
+- Right side: 4 status chips (Vessel · Signal · Missions · Momentum) — pill, dot indicator, 13px label, soft glass.
 
-## Navigator Liam panel
+## Left console
 
-Larger portrait (128px circle, keep current Liam image + halo/scan animation), warmer copy block:
-- Eyebrow: `NAVIGATOR · LIAM`
-- Title: `Standing by, Captain.`
-- 1–2 line contextual suggestion (calm, not alert-style)
-- 2 quick actions (Capture, Brief)
+`FlagshipPanel` and `FinancialWeatherPanel` stacked, `gap-8`, large titles (24px), generous padding (`p-8`), `rounded-3xl`.
 
-## Typography pass
+## Right console
 
-In `src/styles.css`:
-- `.hud-text` bump from ~10px to **12px**, letter-spacing relaxed.
-- Body default 15px (currently small).
-- Panel titles: display font, 22–26px.
-- Hero directive: 22px display.
-- Remove most ALL-CAPS except small labels/eyebrows.
+`NavigatorPanel` (already has Liam portrait — keep, just resize portrait to 112px and soften halo) + Mission Field (existing inline list from `index.tsx`, moved into a `GlassPanel`).
 
-## Visual polish
+Navigator copy:
+- Title: _"Standing by, Captain."_
+- Body: _"You have {n} active missions. Pick one flagship for the next 90 minutes."_
+- Buttons: **Brief Me**, **Log Signal**.
 
-- `GlassPanel` keeps holo border + brackets, but softer (lower opacity, larger radius `rounded-3xl`, more inner padding).
-- `NebulaBackground`: keep current radial blooms; ensure inline style uses shorthand `background` (already fixed) — no canvas particles on SSR path (prevents hydration mismatch).
-- Status bar: render time only after mount (avoid SSR/client time skew currently causing hydration error).
+## Lower deck
 
-## Empty states (rewrite copy)
+Three equal `GlassPanel`s in a 3-col grid: `MomentumFeed`, Timeline Horizon (existing inline), `ArchiveEchoesPanel`.
 
-- Flagship: _"No flagship mission yet. Declare your first flagship."_
-- Finance: _"Financial systems ready. Add your first bill or account."_
-- Archive: _"Archive quiet. First memory capsule awaits."_
-- Momentum: _"Momentum stream idle. Make a move."_
-- Timeline: _"Horizon clear. Chart a due date to set a waypoint."_
+## Visual + typography pass
 
-## Command Dock
+`src/styles.css`:
+- Body 15px, line-height 1.6.
+- `.hud-text`: only used for chips/eyebrows, 12px, +1 tracking. Strip all-caps elsewhere.
+- New `.display-xl` (28px), `.display-lg` (22px) display-font utilities.
+- Soften glass: lower border opacity, larger blur, `rounded-3xl`.
+- Remove ring-tick CSS no longer used.
 
-Keep `CommandDock`. Increase height (h-16), larger icons (22px), bigger labels (12px), stronger active glow on Bridge item, ensure page has `pb-28` so content never hides behind it.
+`GlassPanel`: bigger default padding (`p-7`), softer border, keep brackets but at 40% opacity.
 
-## Files touched
+`CommandDock`: keep height `h-16`, ensure page wrapper has `pb-32`; active Bridge item gets a soft inner glow (no harsh ring).
 
-Edit only:
-- `src/routes/index.tsx` — recompose layout, drop 2 panels, larger hero, new spacing/typography wrappers.
-- `src/components/bridge/CommandCore.tsx` — taller, new holographic vessel SVG, larger rings, directive typography.
-- `src/components/bridge/Vessel.tsx` — replace triangle with elegant ship SVG.
-- `src/components/bridge/BridgeStatusBar.tsx` — mount-gated time to fix hydration mismatch.
-- `src/components/bridge/NavigatorPanel.tsx` — larger portrait, warmer copy, refined layout.
-- `src/components/shell/GlassPanel.tsx` — softer border, larger radius/padding option.
-- `src/components/shell/CommandDock.tsx` — taller, bigger labels.
-- `src/styles.css` — typography scale, softer glass, remove canvas-driven nebula bits if any.
+## Files
 
-No new files, no new dependencies, no data/route/store changes.
+Edit:
+- `src/routes/index.tsx` — full recomposition into the 5 sections above.
+- `src/components/bridge/BridgeStatusBar.tsx` — rewrite as cinematic header.
+- `src/components/bridge/NavigatorPanel.tsx` — shrink portrait, simplify copy, ensure two buttons.
+- `src/components/shell/GlassPanel.tsx` — soften, larger radius/padding.
+- `src/components/shell/CommandDock.tsx` — softer active state, confirm spacing.
+- `src/styles.css` — typography scale + glass tokens.
+
+Create:
+- `src/components/bridge/CinematicHero.tsx` — nebula + vessel + directive + 3 metric cards.
+- `src/components/bridge/HoloVessel.tsx` — SVG personal starship with engine glow and float animation.
+- `src/components/bridge/MetricCard.tsx` — large readable metric card used in the hero.
+
+Delete from Bridge usage (files stay in repo, just unused on `/`):
+- `CommandCore.tsx`, `Vessel.tsx`, `SectorPulsePanel.tsx`, `UniverseStatePanel.tsx`.
+
+No new dependencies. No route, store, or data changes. Runtime 504 on `@radix-ui/react-tabs` will self-heal on next dev restart after the edits land; if not, restart the dev server.
 
 ## Out of scope
 
-- Other routes (Missions, Finance, Archive, etc.).
-- Real 3D/WebGL vessel — stays as crafted SVG for performance and SSR safety.
-- Mobile-specific cockpit variant (stacks responsively, but desktop is the target).
+- Real WebGL/3D vessel (stays as crafted SVG for SSR + perf).
+- Other routes.
+- Mobile-specific composition (stacks responsively, desktop is the target).
