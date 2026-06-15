@@ -19,6 +19,7 @@ export function NavigatorPanel() {
       : active.length === 1
       ? `Focus the bridge on “${active[0].name}.” Single-target days build momentum fastest.`
       : `You have ${active.length} active missions. Pick one flagship for the next 90 minutes.`;
+  // shrink hero portrait per redesign
 
   return (
     <GlassPanel eyebrow={`Navigator · ${name}`} title="Standing by, Captain." variant="hero">
@@ -48,7 +49,7 @@ export function NavigatorPanel() {
             animate={{ rotate: 360 }}
             transition={{ duration: 7, ease: "linear", repeat: Infinity }}
           />
-          <div className="relative h-32 w-32 overflow-hidden rounded-full ring-2 ring-primary/60 shadow-[0_0_28px_var(--primary)]">
+          <div className="relative h-28 w-28 overflow-hidden rounded-full ring-2 ring-primary/50 shadow-[0_0_22px_var(--primary)]">
             <img
               src={navigatorAsset.url}
               alt={name}
