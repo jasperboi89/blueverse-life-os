@@ -51,8 +51,8 @@ export function CommandDock() {
           ))}
         </ul>
       )}
-      <div className="glass-panel holo-border holo-sweep command-glow relative px-2 py-2 sm:px-3 sm:py-2.5">
-        <ul className="flex max-w-[96vw] items-center gap-1 overflow-x-auto sm:gap-1.5">
+      <div className="glass-panel holo-border holo-sweep command-glow relative px-3 py-3 sm:px-4">
+        <ul className="flex max-w-[96vw] items-center gap-1.5 overflow-x-auto sm:gap-2">
           {items.map(({ to, label, icon: Icon }) => {
             const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
             return (
@@ -60,19 +60,19 @@ export function CommandDock() {
                 <Link
                   to={to}
                   className={cn(
-                    "group relative flex flex-col items-center gap-1 rounded-xl px-3 py-2 text-[10px] uppercase tracking-[0.2em] transition-all sm:px-4",
+                    "group relative flex flex-col items-center gap-1.5 rounded-2xl px-4 py-2.5 text-[11px] uppercase tracking-[0.2em] transition-all sm:px-5",
                     active
-                      ? "bg-primary/15 text-primary"
+                      ? "bg-primary/20 text-primary shadow-[inset_0_0_20px_oklch(0.78_0.18_215/0.25)]"
                       : "text-muted-foreground hover:text-foreground hover:bg-primary/10",
                   )}
                 >
                   {active && (
-                    <span className="absolute top-0 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-primary shadow-[0_0_10px_var(--primary)]" />
+                    <span className="absolute top-0 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-primary shadow-[0_0_12px_var(--primary)]" />
                   )}
                   <Icon
                     className={cn(
-                      "h-5 w-5 transition-transform group-hover:scale-110",
-                      active && "drop-shadow-[0_0_8px_oklch(0.78_0.18_215/0.9)]",
+                      "h-[22px] w-[22px] transition-transform group-hover:scale-110",
+                      active && "drop-shadow-[0_0_10px_oklch(0.78_0.18_215/0.95)]",
                     )}
                   />
                   <span className="hidden sm:inline">{label}</span>
