@@ -1,112 +1,91 @@
+# Bridge → Cinematic Cockpit Redesign
 
-# BlueVerse Life OS — MVP Plan
+Visual + layout only on `/`. No changes to routes, stores, enums, or data flow. All existing Bridge sections (Vessel, 3 metrics, Active Flagships, Financial Snapshot, Timeline, Momentum) are preserved and recomposed.
 
-A cinematic "starship bridge" personal operating system. This plan builds the full MVP foundation: shell, design system, navigation, all six primary sections, and persistent storage. Advanced AI behaviors are stubbed as future-ready placeholders.
+## Layout (desktop-first, 12-col cockpit grid)
 
-## 1. Design System & Atmosphere
-
-Deep cosmic blue / cyan / violet glassmorphism, set in `src/styles.css`:
-
-- Tokens: `--background` (near-black cosmic indigo), `--foreground` (soft starlight), `--primary` (electric cyan), `--accent` (violet), `--card` (translucent glass), plus `--glow-primary`, `--gradient-nebula`, `--shadow-holo`.
-- Custom utilities: `.glass-panel`, `.holo-border`, `.command-glow`, `.hud-text`.
-- Typography pair: display = **Orbitron** (HUD headings), body = **Inter** (loaded via `<link>` in `__root.tsx`, NOT `@import` in CSS).
-- Background: animated nebula layer (CSS gradients + slow drifting blurred radial blobs) + a lightweight canvas particle field component (`<NebulaField />`). No heavy WebGL.
-- Motion: framer-motion for panel mount/fade, subtle pulse on the Command Core, dock item hover.
-
-## 2. App Shell & Navigation
-
-`src/routes/__root.tsx` wraps everything with:
-
-- `<NebulaBackground />` fixed layer
-- `<NavigatorPresence />` floating top-right (avatar placeholder, calm status line)
-- `<CommandDock />` — adaptive dock (bottom on desktop, collapsible bottom-sheet on mobile) with stable destinations:
-  Bridge · Missions · Finance · Timeline · Knowledge · Communications · Observatory · Archive · Constitution · Settings
-- `<Outlet />` in a glass content frame
-- `<QuickCaptureButton />` global FAB
-
-Routes created under `src/routes/`:
-
-```
-index.tsx              -> /          (Bridge)
-missions.tsx           -> /missions  (list + create)
-missions.$id.tsx       -> mission detail
-finance.tsx            -> /finance
-timeline.tsx           -> /timeline  (placeholder w/ momentum feed)
-knowledge.tsx          -> /knowledge (placeholder)
-communications.tsx     -> /communications (placeholder)
-observatory.tsx        -> /observatory
-archive.tsx            -> /archive
-archive.$id.tsx        -> capsule detail
-constitution.tsx       -> /constitution
-settings.tsx           -> /settings
+```text
+┌───── BRIDGE STATUS BAR — StarDate · Vessel Systems · Navigator Signal · Focus pulse ─────┐
+│                                                                                          │
+│  LEFT CONSOLE (3 cols)   │     CENTER HERO (6 cols)     │   RIGHT CONSOLE (3 cols)      │
+│  • Active Flagship       │   COMMAND CORE               │   • Navigator Presence (lg)   │
+│  • Financial Weather     │   3 concentric metric rings  │   • Mission Field summary     │
+│  • Sector Pulse (8 dots) │   + vessel silhouette        │   • Archive Echoes            │
+│                          │   + directive chip below     │                               │
+├──────────────── LOWER DECK (full width, 3 panels) ──────────────────────────────────────┤
+│  Momentum Stream  │  Timeline Horizon  │  Universe State (links to /observatory)        │
+└──────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-Each route gets its own `head()` with unique title + description. Every route has `errorComponent` + `notFoundComponent`.
+Mobile collapses to single column: Status → Core → Navigator → left panels → lower deck.
 
-## 3. Section Contents
+## Hero centerpiece — new `src/components/bridge/CommandCore.tsx`
 
-**Bridge (`/`)** — cinematic cockpit grid:
-- Central **Vessel + Dynamic Command Core** (animated SVG/CSS orb that pulses to overall Mission Progress)
-- Three core metric rings: Mission Progress, Financial Health, Focus
-- Navigator presence panel (avatar placeholder, greeting, daily signal line — placeholder for adaptive briefing)
-- Active Missions preview (top 3 flagship/in-progress)
-- Financial snapshot (weather + net flow)
-- Timeline preview (recent events)
-- Momentum feed (recent progress entries)
-- Quick Capture button
+Single ~520px SVG, replaces current `<Vessel />` + 3 separate ring cards:
+- Outer ring: Mission Progress (cyan), middle: Financial Health (violet), inner: Focus (azure) — each animated stroke-dashoffset with framer-motion
+- Tick marks every 30°, small value labels at ring ends
+- Center: stylized vessel silhouette (SVG arrowhead echoing the uploaded logo) + pulsing core glow + radial highlight
+- Orbiting dots (rotate animation)
+- "Active Directive" chip pinned at base of core with top mission title + CTA → `/missions/$id`
+- 4 corner brackets framing the hero panel
 
-**Mission Command (`/missions`)** — list grid + "New Mission" dialog + detail page with every field listed: name, domain, class, difficulty, priority, status, progress %, health, flagship toggle, supporting-flagship toggle, story, success criteria, milestones (sub-list), tasks (sub-list w/ check), notes, recovery path section (placeholder editor), risk indicators (auto from health + due dates), complete/archive actions. Enums implemented for classes, difficulty, health.
+## Console upgrade — `src/components/shell/GlassPanel.tsx`
 
-**Financial Command (`/finance`)** — manual-first. Cards for: Financial Health status, Financial Weather selector (Clear→Storm with themed gradients), Bills, Income/Paychecks, Debt Accounts, Savings Goals, Financial Missions (filtered missions w/ class=Financial), Forecast cards (placeholder), Upcoming Obligations (auto from bills).
+Add depth without breaking existing usage:
+- Layered glass gradient + inner bottom violet wash
+- Optional `corner-brackets` and `scanlines` overlay (default on)
+- Optional `holo-sweep` rotating border for `variant="hero"`
+- HUD label strip stays at top
 
-**Observatory (`/observatory`)** — visual overview:
-- Vessel render (shared with Bridge, larger)
-- 8 sector tiles (Work, Finance, Growth, Creative, Wellbeing, Personal, Relationships, Archive) with domain level bars
-- Active missions constellation (simple SVG node map)
-- Legacy banner placeholders
-- Simplified universe map (decorative SVG)
+## New small Bridge panels (`src/components/bridge/`)
 
-**Archive (`/archive`)** — tabs for Memory Capsules, Mission Chronicles, Audio Capsules, Temporal Vault Letters, Book of Ages. Audio Capsule form covers all listed fields (title, type enum, audio upload placeholder, transcript + editable transcript + preserved original, date, time, weather snapshot, headline snapshot, linked mission, linked person, tags).
+- `BridgeStatusBar.tsx` — StarDate, system pills (Vessel Systems / Navigator Signal / Momentum), blinking signal dot
+- `FlagshipPanel.tsx` — top flagship mission card; empty: "No flagship mission yet. Declare one."
+- `FinancialWeatherPanel.tsx` — weather glyph + gradient, bills due count, total; empty: "No bills logged. Financial systems ready."
+- `NavigatorPanel.tsx` — large 96px avatar with cyan halo, "Standing by, Captain.", one recommendation line, one quick action button (opens QuickCapture)
+- `SectorPulsePanel.tsx` — 8 sector dots sized by mission count
+- `MissionFieldPanel.tsx` — counts by status (Active / Planned / Paused)
+- `ArchiveEchoesPanel.tsx` — last memory capsule snippet; empty: "Archive quiet. First memory capsule awaits."
+- `UniverseStatePanel.tsx` — mini SVG constellation linking to `/observatory`
+- Reuse existing `MomentumFeed` and a small timeline preview panel — empty momentum: "No momentum logged yet. Make a move."
 
-**Personal Constitution (`/constitution`)** — sections: What Matters Most, Guiding Principles, Life Vision, Lessons Learned, Revision History (placeholder list).
+The shell `NavigatorPresence` (top-right) stays for global routes but is hidden on `/` so the Bridge-local Navigator panel is the focal one.
 
-Other dock destinations (Timeline, Knowledge, Communications, Settings) get minimal but styled placeholder pages so the dock is fully navigable.
+## Background upgrade — `src/components/shell/NebulaBackground.tsx`
 
-## 4. Data & Persistence
+Keep existing canvas starfield. Add CSS layers:
+- 2 large radial nebula blooms with slow `nebula-drift`
+- Faint concentric orbital ring SVG behind hero
+- Diagonal light-sweep div with 18s `light-sweep` animation
+- 3 distant blurred sector glows
 
-MVP uses **localStorage-backed Zustand stores** (no backend yet — keeps it instant and offline). Each store exposes typed CRUD:
+All CSS/SVG; no extra canvas work.
 
-- `missionsStore` · `financeStore` (bills, income, debts, savings, weather, health) · `archiveStore` (all capsule types) · `constitutionStore` · `momentumStore` (auto-logged events) · `settingsStore` · `navigatorStore`.
+## Command Dock upgrade — `src/components/shell/CommandDock.tsx`
 
-Single seed on first load so the Bridge isn't empty. Future-ready: stores are written so they can swap to Lovable Cloud later without changing component code.
+- Larger padding, taller buttons, clearer labels at `sm:`
+- Active item: glowing pill + top tick + brighter icon
+- New floating row above dock: 3 adaptive shortcut chips (route-aware, e.g. `+ Mission`, `Log Momentum`, `Open Vault`)
+- Inner glass + holo border + corner brackets
 
-## 5. Future-Ready Placeholders
+## Styling — `src/styles.css`
 
-Clearly marked `// future: adaptive` stubs for: daily briefing text, recovery path suggestions, financial forecast, universe evolution, risk auto-detection beyond simple rules, Navigator adaptive lines.
+Add utilities (Tailwind v4 `@utility`): `holo-sweep`, `corner-brackets`, `scanlines`, `text-gradient-flare`. Add keyframes: `holo-spin`, `orbit-spin`, `light-sweep`, `signal-blink`. Strengthen `glass-panel` with layered gradient + inner violet wash.
 
-## Technical Details
+No hardcoded color classes — all via existing tokens.
 
-- Stack: existing TanStack Start + Tailwind v4 + shadcn. Add deps: `framer-motion`, `zustand`, `date-fns`, `lucide-react` (already), `nanoid`.
-- File layout:
-  - `src/components/bridge/*` (Vessel, CommandCore, MetricRing, MomentumFeed, NavigatorPresence)
-  - `src/components/shell/*` (CommandDock, NebulaBackground, NebulaField, QuickCapture, GlassPanel)
-  - `src/components/missions/*`, `src/components/finance/*`, `src/components/archive/*`, `src/components/observatory/*`
-  - `src/stores/*` (one file per store)
-  - `src/lib/enums.ts` (mission classes, difficulty, health, weather, sectors, capsule types)
-  - `src/lib/seed.ts`
-- All colors via semantic tokens — zero hardcoded hex in components.
-- Desktop-first layout, responsive collapse: dock → bottom sheet, Bridge grid → stacked, with `grid-cols-[minmax(0,1fr)_auto]` + `min-w-0` on header rows.
-- Avatar placeholder: generated image at `src/assets/navigator-placeholder.jpg` (calm portrait silhouette, cosmic backdrop).
+## BlueVerse vocabulary
 
-## Out of Scope (Future Phases)
+Section labels use: StarDate · Bridge Status · Vessel Systems · Navigator Signal · Active Flagship · Financial Weather · Mission Field · Momentum Stream · Archive Echoes · Universe State.
 
-- Real AI briefings / adaptive Navigator dialogue
-- Real audio recording + transcription
-- Real weather/headline fetch
-- Cloud sync, auth, multi-device
-- Knowledge graph, Communications inbox logic — UI shells only
-- Complex universe-evolution visualization
+## Files
 
-## Deliverable
+Edit: `src/routes/index.tsx`, `src/styles.css`, `src/components/shell/GlassPanel.tsx`, `src/components/shell/NebulaBackground.tsx`, `src/components/shell/CommandDock.tsx`, `src/routes/__root.tsx` (hide top NavigatorPresence on `/`).
 
-A navigable, persistent, visually cinematic MVP where the user can on day one: create missions, log finances, capture archive entries, write their constitution, and feel the bridge come alive.
+Create: `src/components/bridge/CommandCore.tsx`, `BridgeStatusBar.tsx`, `FlagshipPanel.tsx`, `FinancialWeatherPanel.tsx`, `NavigatorPanel.tsx`, `SectorPulsePanel.tsx`, `MissionFieldPanel.tsx`, `ArchiveEchoesPanel.tsx`, `UniverseStatePanel.tsx`.
+
+Existing `Vessel.tsx` and `MetricRing.tsx` remain unchanged (still importable elsewhere). No new dependencies.
+
+## Out of scope
+
+Real adaptive AI logic, observatory rewrite, mobile-specific cockpit variant beyond responsive stack, changes to other routes.
