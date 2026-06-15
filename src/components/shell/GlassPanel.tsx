@@ -24,7 +24,7 @@ export function GlassPanel({
   return (
     <section
       className={cn(
-        "glass-panel holo-border relative overflow-hidden p-4 sm:p-5",
+        "glass-panel holo-border relative overflow-hidden rounded-3xl p-6 sm:p-7",
         variant === "hero" && "holo-sweep command-glow",
         scan && "scanlines",
         className,
@@ -33,7 +33,7 @@ export function GlassPanel({
     >
       {brackets && <CornerBrackets />}
       {(title || eyebrow || action) && (
-        <header className="relative z-[1] mb-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+        <header className="relative z-[1] mb-5 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
           <div className="min-w-0">
             {eyebrow && (
               <p className="hud-text flex items-center gap-2">
@@ -42,7 +42,7 @@ export function GlassPanel({
               </p>
             )}
             {title && (
-              <h3 className="truncate font-display text-lg text-foreground sm:text-xl">{title}</h3>
+              <h3 className="mt-1.5 truncate font-display text-xl text-foreground sm:text-2xl">{title}</h3>
             )}
           </div>
           {action && <div className="shrink-0">{action}</div>}
