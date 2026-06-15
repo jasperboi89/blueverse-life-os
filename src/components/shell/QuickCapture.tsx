@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +16,12 @@ export function QuickCapture() {
   const [body, setBody] = useState("");
   const addMemory = useArchive((s) => s.addMemory);
   const log = useMomentum((s) => s.log);
+
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("blueverse:quick-capture", handler);
+    return () => window.removeEventListener("blueverse:quick-capture", handler);
+  }, []);
 
   const submit = () => {
     if (!body.trim()) return;
