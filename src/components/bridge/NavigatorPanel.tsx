@@ -1,8 +1,9 @@
+import { motion } from "framer-motion";
 import { Sparkles, MessageCircle } from "lucide-react";
 import { GlassPanel } from "@/components/shell/GlassPanel";
 import { useSettings } from "@/stores/settings";
 import { useMissions } from "@/stores/missions";
-import navigatorImg from "@/assets/navigator-placeholder.jpg";
+import navigatorAsset from "@/assets/navigator-liam.png.asset.json";
 import { Button } from "@/components/ui/button";
 
 export function NavigatorPanel() {
