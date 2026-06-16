@@ -127,7 +127,14 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <StoreBoot />
-      {isBridge ? <BridgeBackground /> : <NebulaBackground />}
+      {isBridge ? (
+        <>
+          <BridgeBackground />
+          <CockpitFrame />
+        </>
+      ) : (
+        <NebulaBackground />
+      )}
       <div className="relative min-h-screen">
         {!isBridge && (
           <header className="fixed top-3 right-3 z-30 hidden sm:block">
