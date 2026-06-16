@@ -55,7 +55,7 @@ function Bridge() {
     .slice(0, 3);
 
   return (
-    <div className="mx-auto w-full max-w-[1680px] space-y-10 px-4 pb-32 sm:px-8 lg:px-10">
+    <div className="mx-auto w-full max-w-[1680px] space-y-10 px-6 pb-40 sm:px-10 lg:px-14">
       {/* 1 · CINEMATIC HEADER */}
       <BridgeStatusBar callSign={callSign} />
 
@@ -76,41 +76,40 @@ function Bridge() {
         focusCaption="Tune in Settings · adjust as the day unfolds"
       />
 
-      {/* 3 & 4 · CONSOLES */}
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div className="space-y-8">
-          <FlagshipPanel />
-          <FinancialWeatherPanel />
-        </div>
-        <div className="space-y-8">
-          <NavigatorPanel />
-          <GlassPanel eyebrow="Mission Field" title={`${active.length} Active`}>
-            {missions.length === 0 ? (
-              <EmptyState
-                icon={<Sparkles className="h-5 w-5 text-primary" />}
-                title="Mission field is clear."
-                hint="Plot your first mission to chart a course."
-                cta={{ to: "/missions", label: "Open Missions" }}
-              />
-            ) : (
-              <>
-                <ul className="grid grid-cols-2 gap-3 text-[15px]">
-                  <FieldRow label="Active" value={active.length} accent />
-                  <FieldRow label="Planned" value={missions.filter((m) => m.status === "Planned").length} />
-                  <FieldRow label="Paused" value={missions.filter((m) => m.status === "Paused").length} />
-                  <FieldRow label="Completed" value={missions.filter((m) => m.status === "Completed").length} />
-                </ul>
-                <Link
-                  to="/missions"
-                  className="mt-5 inline-flex items-center gap-1.5 text-[13px] text-primary hover:underline"
-                >
-                  All missions <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </>
-            )}
-          </GlassPanel>
-        </div>
+      {/* 3 · CONSOLE ROW — Flagship · Navigator · Mission Field */}
+      <div className="grid gap-8 lg:grid-cols-3">
+        <FlagshipPanel />
+        <NavigatorPanel />
+        <GlassPanel eyebrow="Mission Field" title={`${active.length} Active`}>
+          {missions.length === 0 ? (
+            <EmptyState
+              icon={<Sparkles className="h-5 w-5 text-primary" />}
+              title="Mission field is clear."
+              hint="Plot your first mission to chart a course."
+              cta={{ to: "/missions", label: "Open Missions" }}
+            />
+          ) : (
+            <>
+              <ul className="grid grid-cols-2 gap-3 text-[15px]">
+                <FieldRow label="Active" value={active.length} accent />
+                <FieldRow label="Planned" value={missions.filter((m) => m.status === "Planned").length} />
+                <FieldRow label="Paused" value={missions.filter((m) => m.status === "Paused").length} />
+                <FieldRow label="Completed" value={missions.filter((m) => m.status === "Completed").length} />
+              </ul>
+              <Link
+                to="/missions"
+                className="mt-5 inline-flex items-center gap-1.5 text-[13px] text-primary hover:underline"
+              >
+                All missions <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </>
+          )}
+        </GlassPanel>
       </div>
+
+      {/* 4 · FINANCE WIDE */}
+      <FinancialWeatherPanel />
+
 
       {/* 5 · LOWER DECK */}
       <div className="grid gap-8 lg:grid-cols-3">
