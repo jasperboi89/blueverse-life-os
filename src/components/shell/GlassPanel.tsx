@@ -24,7 +24,7 @@ export function GlassPanel({
   return (
     <section
       className={cn(
-        "glass-panel holo-border relative overflow-hidden rounded-3xl p-6 sm:p-7",
+        "glass-panel holo-border holo-glow relative overflow-hidden rounded-3xl p-6 backdrop-blur-2xl sm:p-7",
         variant === "hero" && "holo-sweep command-glow",
         scan && "scanlines",
         className,

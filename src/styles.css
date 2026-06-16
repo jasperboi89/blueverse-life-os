@@ -257,3 +257,52 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.35; }
 }
+
+/* ---- Cockpit curved cockpit pane behavior ---- */
+@utility cockpit-stage {
+  perspective: 2200px;
+  perspective-origin: 50% 55%;
+  transform-style: preserve-3d;
+}
+
+@utility holo-pane {
+  transform-style: preserve-3d;
+  transition: transform 600ms ease;
+  will-change: transform;
+}
+
+@utility pane-left   { transform: rotateY(7deg)  translateZ(0); }
+@utility pane-right  { transform: rotateY(-7deg) translateZ(0); }
+@utility pane-center { transform: rotateY(0deg)  translateZ(14px); }
+@utility pane-lift   { transform: translateZ(22px); }
+
+@utility holo-glow {
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.10),
+    inset 0 -80px 100px -60px oklch(0.55 0.22 290 / 0.32),
+    0 18px 50px -10px oklch(0.10 0.06 270 / 0.6),
+    0 0 60px -20px oklch(0.68 0.22 295 / 0.45),
+    0 0 30px -12px oklch(0.78 0.18 215 / 0.35);
+}
+
+@keyframes pane-drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) rotateY(var(--pane-ry, 0deg)); }
+  50%      { transform: translate3d(0, -6px, 0) rotateY(var(--pane-ry, 0deg)); }
+}
+@keyframes pane-drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) rotateY(var(--pane-ry, 0deg)); }
+  50%      { transform: translate3d(3px, -4px, 0) rotateY(var(--pane-ry, 0deg)); }
+}
+@keyframes pane-drift-c {
+  0%, 100% { transform: translate3d(0, 0, 0) rotateY(var(--pane-ry, 0deg)); }
+  50%      { transform: translate3d(-3px, -5px, 0) rotateY(var(--pane-ry, 0deg)); }
+}
+
+@utility drift-a { animation: pane-drift-a 11s ease-in-out infinite; }
+@utility drift-b { animation: pane-drift-b 13s ease-in-out infinite; }
+@utility drift-c { animation: pane-drift-c 15s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .drift-a, .drift-b, .drift-c { animation: none !important; }
+}
+
