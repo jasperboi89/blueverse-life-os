@@ -81,20 +81,33 @@ function Bridge() {
       {/* 3 · CONSOLE ROW — curved cockpit panes */}
       <div className="cockpit-stage grid gap-8 pt-6 lg:grid-cols-3">
         <div
-          className="holo-pane drift-a"
-          style={{ ["--pane-ry" as any]: "14deg", transformOrigin: "right center" }}
+          className="holo-pane"
+          style={{
+            transformOrigin: "right center",
+            ["--pane-ry" as any]: "8deg",
+            ["--pane-tz" as any]: "20px",
+            ["--pane-tx" as any]: "12px",
+          }}
         >
           <FlagshipPanel />
         </div>
         <div
-          className="holo-pane drift-b"
-          style={{ ["--pane-ry" as any]: "0deg", transform: "translateZ(28px)" }}
+          className="holo-pane"
+          style={{
+            ["--pane-ry" as any]: "0deg",
+            ["--pane-tz" as any]: "40px",
+          }}
         >
           <NavigatorPanel />
         </div>
         <div
-          className="holo-pane drift-c"
-          style={{ ["--pane-ry" as any]: "-14deg", transformOrigin: "left center" }}
+          className="holo-pane"
+          style={{
+            transformOrigin: "left center",
+            ["--pane-ry" as any]: "-8deg",
+            ["--pane-tz" as any]: "20px",
+            ["--pane-tx" as any]: "-12px",
+          }}
         >
           <GlassPanel eyebrow="Mission Field" title={`${active.length} Active`}>
             {missions.length === 0 ? (
@@ -126,7 +139,13 @@ function Bridge() {
 
       {/* 4 · FINANCE WIDE */}
       <div className="cockpit-stage pt-6">
-        <div className="holo-pane drift-b" style={{ ["--pane-ry" as any]: "0deg" }}>
+        <div
+          className="holo-pane"
+          style={{
+            ["--pane-rx" as any]: "3deg",
+            ["--pane-tz" as any]: "25px",
+          }}
+        >
           <FinancialWeatherPanel />
         </div>
       </div>
@@ -134,8 +153,14 @@ function Bridge() {
       {/* 5 · LOWER DECK */}
       <div className="cockpit-stage grid gap-8 pt-6 lg:grid-cols-3">
         <div
-          className="holo-pane drift-a"
-          style={{ ["--pane-ry" as any]: "12deg", transformOrigin: "right center" }}
+          className="holo-pane"
+          style={{
+            transformOrigin: "right center",
+            ["--pane-ry" as any]: "8deg",
+            ["--pane-rx" as any]: "3deg",
+            ["--pane-tz" as any]: "25px",
+            ["--pane-tx" as any]: "10px",
+          }}
         >
           <GlassPanel
             eyebrow="Momentum Stream"
@@ -154,8 +179,11 @@ function Bridge() {
         </div>
 
         <div
-          className="holo-pane drift-c"
-          style={{ ["--pane-ry" as any]: "0deg", transform: "translateZ(18px)" }}
+          className="holo-pane"
+          style={{
+            ["--pane-rx" as any]: "3deg",
+            ["--pane-tz" as any]: "40px",
+          }}
         >
           <GlassPanel eyebrow="Timeline Horizon" title="Approaching">
             {upcoming.length === 0 ? (
@@ -190,12 +218,19 @@ function Bridge() {
         </div>
 
         <div
-          className="holo-pane drift-b"
-          style={{ ["--pane-ry" as any]: "-12deg", transformOrigin: "left center" }}
+          className="holo-pane"
+          style={{
+            transformOrigin: "left center",
+            ["--pane-ry" as any]: "-8deg",
+            ["--pane-rx" as any]: "3deg",
+            ["--pane-tz" as any]: "25px",
+            ["--pane-tx" as any]: "-10px",
+          }}
         >
           <ArchiveEchoesPanel />
         </div>
       </div>
+
     </div>
 
   );
