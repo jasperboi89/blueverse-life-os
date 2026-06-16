@@ -55,7 +55,7 @@ function Bridge() {
     .slice(0, 3);
 
   return (
-    <div className="mx-auto w-full max-w-[1680px] space-y-10 px-6 pb-40 sm:px-10 lg:px-14">
+    <div className="mx-auto w-full max-w-[1600px] space-y-10 px-6 pt-6 pb-40 sm:px-10 lg:px-14">
       {/* 1 · CINEMATIC HEADER */}
       <BridgeStatusBar callSign={callSign} />
 
