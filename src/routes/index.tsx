@@ -135,7 +135,7 @@ function Bridge() {
       <div className="cockpit-stage grid gap-8 pt-6 lg:grid-cols-3">
         <div
           className="holo-pane drift-a"
-          style={{ ["--pane-ry" as any]: "5deg", transformOrigin: "right center" }}
+          style={{ ["--pane-ry" as any]: "12deg", transformOrigin: "right center" }}
         >
           <GlassPanel
             eyebrow="Momentum Stream"
