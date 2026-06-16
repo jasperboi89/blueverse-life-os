@@ -191,7 +191,7 @@ function Bridge() {
 
         <div
           className="holo-pane drift-b"
-          style={{ ["--pane-ry" as any]: "-5deg", transformOrigin: "left center" }}
+          style={{ ["--pane-ry" as any]: "-12deg", transformOrigin: "left center" }}
         >
           <ArchiveEchoesPanel />
         </div>
