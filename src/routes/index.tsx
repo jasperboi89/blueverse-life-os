@@ -55,113 +55,149 @@ function Bridge() {
     .slice(0, 3);
 
   return (
-    <div className="mx-auto w-full max-w-[1600px] space-y-10 px-6 pt-6 pb-40 sm:px-10 lg:px-14">
+    <div className="mx-auto w-full max-w-[1600px] space-y-14 px-6 pt-10 pb-48 sm:px-10 sm:pt-14 lg:px-14">
       {/* 1 · CINEMATIC HEADER */}
       <BridgeStatusBar callSign={callSign} />
 
       {/* 2 · HERO */}
-      <CinematicHero
-        directive={directiveLine}
-        mission={overall}
-        finance={{
-          label: finance.health,
-          caption: `Weather · ${finance.weather}. ${financeIndex}% index.`,
-        }}
-        focus={focus}
-        missionCaption={
-          active.length
-            ? `${active.length} active mission${active.length === 1 ? "" : "s"} underway`
-            : "No active missions yet"
-        }
-        focusCaption="Tune in Settings · adjust as the day unfolds"
-      />
+      <div className="cockpit-stage">
+        <CinematicHero
+          directive={directiveLine}
+          mission={overall}
+          finance={{
+            label: finance.health,
+            caption: `Weather · ${finance.weather}. ${financeIndex}% index.`,
+          }}
+          focus={focus}
+          missionCaption={
+            active.length
+              ? `${active.length} active mission${active.length === 1 ? "" : "s"} underway`
+              : "No active missions yet"
+          }
+          focusCaption="Tune in Settings · adjust as the day unfolds"
+        />
+      </div>
 
-      {/* 3 · CONSOLE ROW — Flagship · Navigator · Mission Field */}
-      <div className="grid gap-8 lg:grid-cols-3">
-        <FlagshipPanel />
-        <NavigatorPanel />
-        <GlassPanel eyebrow="Mission Field" title={`${active.length} Active`}>
-          {missions.length === 0 ? (
-            <EmptyState
-              icon={<Sparkles className="h-5 w-5 text-primary" />}
-              title="Mission field is clear."
-              hint="Plot your first mission to chart a course."
-              cta={{ to: "/missions", label: "Open Missions" }}
-            />
-          ) : (
-            <>
-              <ul className="grid grid-cols-2 gap-3 text-[15px]">
-                <FieldRow label="Active" value={active.length} accent />
-                <FieldRow label="Planned" value={missions.filter((m) => m.status === "Planned").length} />
-                <FieldRow label="Paused" value={missions.filter((m) => m.status === "Paused").length} />
-                <FieldRow label="Completed" value={missions.filter((m) => m.status === "Completed").length} />
-              </ul>
-              <Link
-                to="/missions"
-                className="mt-5 inline-flex items-center gap-1.5 text-[13px] text-primary hover:underline"
-              >
-                All missions <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </>
-          )}
-        </GlassPanel>
+      {/* 3 · CONSOLE ROW — curved cockpit panes */}
+      <div className="cockpit-stage grid gap-8 pt-6 lg:grid-cols-3">
+        <div
+          className="holo-pane drift-a"
+          style={{ ["--pane-ry" as any]: "7deg", transformOrigin: "right center" }}
+        >
+          <FlagshipPanel />
+        </div>
+        <div
+          className="holo-pane drift-b"
+          style={{ ["--pane-ry" as any]: "0deg", transform: "translateZ(14px)" }}
+        >
+          <NavigatorPanel />
+        </div>
+        <div
+          className="holo-pane drift-c"
+          style={{ ["--pane-ry" as any]: "-7deg", transformOrigin: "left center" }}
+        >
+          <GlassPanel eyebrow="Mission Field" title={`${active.length} Active`}>
+            {missions.length === 0 ? (
+              <EmptyState
+                icon={<Sparkles className="h-5 w-5 text-primary" />}
+                title="Mission field is clear."
+                hint="Plot your first mission to chart a course."
+                cta={{ to: "/missions", label: "Open Missions" }}
+              />
+            ) : (
+              <>
+                <ul className="grid grid-cols-2 gap-3 text-[15px]">
+                  <FieldRow label="Active" value={active.length} accent />
+                  <FieldRow label="Planned" value={missions.filter((m) => m.status === "Planned").length} />
+                  <FieldRow label="Paused" value={missions.filter((m) => m.status === "Paused").length} />
+                  <FieldRow label="Completed" value={missions.filter((m) => m.status === "Completed").length} />
+                </ul>
+                <Link
+                  to="/missions"
+                  className="mt-5 inline-flex items-center gap-1.5 text-[13px] text-primary hover:underline"
+                >
+                  All missions <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </>
+            )}
+          </GlassPanel>
+        </div>
       </div>
 
       {/* 4 · FINANCE WIDE */}
-      <FinancialWeatherPanel />
-
+      <div className="cockpit-stage pt-6">
+        <div className="holo-pane drift-b" style={{ ["--pane-ry" as any]: "0deg" }}>
+          <FinancialWeatherPanel />
+        </div>
+      </div>
 
       {/* 5 · LOWER DECK */}
-      <div className="grid gap-8 lg:grid-cols-3">
-        <GlassPanel
-          eyebrow="Momentum Stream"
-          title="Recent Motion"
-          action={
-            <Link
-              to="/timeline"
-              className="inline-flex items-center gap-1.5 text-[12px] text-primary hover:underline"
-            >
-              Timeline <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          }
+      <div className="cockpit-stage grid gap-8 pt-6 lg:grid-cols-3">
+        <div
+          className="holo-pane drift-a"
+          style={{ ["--pane-ry" as any]: "5deg", transformOrigin: "right center" }}
         >
-          <MomentumFeed limit={5} />
-        </GlassPanel>
+          <GlassPanel
+            eyebrow="Momentum Stream"
+            title="Recent Motion"
+            action={
+              <Link
+                to="/timeline"
+                className="inline-flex items-center gap-1.5 text-[12px] text-primary hover:underline"
+              >
+                Timeline <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            }
+          >
+            <MomentumFeed limit={5} />
+          </GlassPanel>
+        </div>
 
-        <GlassPanel eyebrow="Timeline Horizon" title="Approaching">
-          {upcoming.length === 0 ? (
-            <EmptyState
-              icon={<Activity className="h-5 w-5 text-primary" />}
-              title="Horizon clear."
-              hint="Chart a due date on a mission to set a waypoint."
-              cta={{ to: "/missions", label: "Set Waypoint" }}
-            />
-          ) : (
-            <ul className="space-y-3">
-              {upcoming.map((m) => (
-                <li key={m.id}>
-                  <Link
-                    to="/missions/$id"
-                    params={{ id: m.id }}
-                    className="block rounded-xl border border-primary/15 bg-primary/5 px-4 py-3 transition-colors hover:bg-primary/10"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="truncate text-[15px] text-foreground">{m.name}</p>
-                      <Activity className="h-4 w-4 shrink-0 text-primary" />
-                    </div>
-                    <p className="mt-1.5 text-[12px] text-muted-foreground">
-                      {m.dueDate ? `In ${formatDistanceToNow(new Date(m.dueDate))}` : "Unscheduled"}
-                    </p>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </GlassPanel>
+        <div
+          className="holo-pane drift-c"
+          style={{ ["--pane-ry" as any]: "0deg", transform: "translateZ(18px)" }}
+        >
+          <GlassPanel eyebrow="Timeline Horizon" title="Approaching">
+            {upcoming.length === 0 ? (
+              <EmptyState
+                icon={<Activity className="h-5 w-5 text-primary" />}
+                title="Horizon clear."
+                hint="Chart a due date on a mission to set a waypoint."
+                cta={{ to: "/missions", label: "Set Waypoint" }}
+              />
+            ) : (
+              <ul className="space-y-3">
+                {upcoming.map((m) => (
+                  <li key={m.id}>
+                    <Link
+                      to="/missions/$id"
+                      params={{ id: m.id }}
+                      className="block rounded-xl border border-primary/15 bg-primary/5 px-4 py-3 transition-colors hover:bg-primary/10"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="truncate text-[15px] text-foreground">{m.name}</p>
+                        <Activity className="h-4 w-4 shrink-0 text-primary" />
+                      </div>
+                      <p className="mt-1.5 text-[12px] text-muted-foreground">
+                        {m.dueDate ? `In ${formatDistanceToNow(new Date(m.dueDate))}` : "Unscheduled"}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </GlassPanel>
+        </div>
 
-        <ArchiveEchoesPanel />
+        <div
+          className="holo-pane drift-b"
+          style={{ ["--pane-ry" as any]: "-5deg", transformOrigin: "left center" }}
+        >
+          <ArchiveEchoesPanel />
+        </div>
       </div>
     </div>
+
   );
 }
 
