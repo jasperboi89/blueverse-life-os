@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { NebulaBackground } from "@/components/shell/NebulaBackground";
 import { BridgeBackground } from "@/components/bridge/BridgeBackground";
+import { CockpitFrame } from "@/components/bridge/CockpitFrame";
 import { CommandDock } from "@/components/shell/CommandDock";
 import { NavigatorPresence } from "@/components/shell/NavigatorPresence";
 import { QuickCapture } from "@/components/shell/QuickCapture";
@@ -126,7 +127,14 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <StoreBoot />
-      {isBridge ? <BridgeBackground /> : <NebulaBackground />}
+      {isBridge ? (
+        <>
+          <BridgeBackground />
+          <CockpitFrame />
+        </>
+      ) : (
+        <NebulaBackground />
+      )}
       <div className="relative min-h-screen">
         {!isBridge && (
           <header className="fixed top-3 right-3 z-30 hidden sm:block">
@@ -136,7 +144,7 @@ function RootComponent() {
         <main
           className={
             isBridge
-              ? "w-full pb-40"
+              ? "relative z-10 w-full pb-40"
               : "mx-auto w-full max-w-7xl px-3 pt-4 pb-36 sm:px-6 sm:pt-6"
           }
         >
