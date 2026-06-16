@@ -19,9 +19,9 @@ export function BridgeStatusBar({ callSign }: { callSign: string }) {
   const localTime = now ? format(now, "HH:mm") : "—:—";
 
   return (
-    <header className="flex flex-col gap-5 px-2 pt-2 sm:flex-row sm:items-end sm:justify-between">
+    <header className="flex flex-col gap-5 px-2 pt-2 lg:flex-row lg:items-end lg:justify-between">
       <div className="min-w-0">
-        <h1 className="truncate font-display text-[28px] leading-tight text-foreground sm:text-[34px]">
+        <h1 className="font-display text-[28px] leading-tight text-foreground sm:text-[34px]">
           Welcome aboard, <span className="text-gradient-flare">{callSign}</span>.
         </h1>
         <p
