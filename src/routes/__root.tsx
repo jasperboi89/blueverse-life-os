@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { NebulaBackground } from "@/components/shell/NebulaBackground";
 import { BridgeBackground } from "@/components/bridge/BridgeBackground";
+import { CockpitFrame } from "@/components/bridge/CockpitFrame";
 import { CommandDock } from "@/components/shell/CommandDock";
 import { NavigatorPresence } from "@/components/shell/NavigatorPresence";
 import { QuickCapture } from "@/components/shell/QuickCapture";
