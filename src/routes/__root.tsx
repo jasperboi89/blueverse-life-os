@@ -144,7 +144,7 @@ function RootComponent() {
         <main
           className={
             isBridge
-              ? "w-full pb-40"
+              ? "relative z-10 w-full pb-40"
               : "mx-auto w-full max-w-7xl px-3 pt-4 pb-36 sm:px-6 sm:pt-6"
           }
         >
