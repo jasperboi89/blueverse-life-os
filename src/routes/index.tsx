@@ -82,19 +82,19 @@ function Bridge() {
       <div className="cockpit-stage grid gap-8 pt-6 lg:grid-cols-3">
         <div
           className="holo-pane drift-a"
-          style={{ ["--pane-ry" as any]: "7deg", transformOrigin: "right center" }}
+          style={{ ["--pane-ry" as any]: "14deg", transformOrigin: "right center" }}
         >
           <FlagshipPanel />
         </div>
         <div
           className="holo-pane drift-b"
-          style={{ ["--pane-ry" as any]: "0deg", transform: "translateZ(14px)" }}
+          style={{ ["--pane-ry" as any]: "0deg", transform: "translateZ(28px)" }}
         >
           <NavigatorPanel />
         </div>
         <div
           className="holo-pane drift-c"
-          style={{ ["--pane-ry" as any]: "-7deg", transformOrigin: "left center" }}
+          style={{ ["--pane-ry" as any]: "-14deg", transformOrigin: "left center" }}
         >
           <GlassPanel eyebrow="Mission Field" title={`${active.length} Active`}>
             {missions.length === 0 ? (
