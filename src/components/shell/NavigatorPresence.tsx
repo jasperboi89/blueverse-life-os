@@ -1,5 +1,5 @@
 import { useSettings } from "@/stores/settings";
-import navigatorAsset from "@/assets/navigator-liam.png.asset.json";
+import navigatorAsset from "@/assets/navigator-avatar.png.asset.json";
 
 export function NavigatorPresence() {
   const name = useSettings((s) => s.navigatorName);
