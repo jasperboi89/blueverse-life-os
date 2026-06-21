@@ -1,101 +1,80 @@
-# Bridge v3 — Cinematic Command Lounge
+## Mission Command — Build Plan
 
-Throw away the HUD cockpit. Rebuild the Bridge page as a calm, spacious, Apple-Vision-Pro-grade command lounge. Keep every route, store, data shape, and panel component — only the Bridge composition and a few visual primitives change.
+The Missions route and store already exist with the right enums (Classes, Difficulties, Healths) and basic milestone/task plumbing. The work is to **level up** the list page and detail page into a true Mission Command experience and add the missing data (milestone richness, next milestone, last activity, flagship rules, recovery checklist) — without touching the Bridge, routes, or other modules.
 
-## Layout (exactly 5 sections above the dock)
+### 1. Data model upgrades (`src/stores/missions.ts`)
 
-```text
-┌──────────────────────────────────────────────────────────────┐
-│ 1. CINEMATIC HEADER                                          │
-│    "Welcome aboard, Captain."  ·  Stardate · Local time      │
-│    Chips: Vessel · Signal · Missions · Momentum              │
-├──────────────────────────────────────────────────────────────┤
-│ 2. HERO — Holographic Personal Vessel                        │
-│    Nebula bloom · floating starship · glass overlay          │
-│    Directive: "Course set: Build Six-Month Runway"           │
-│    [ Mission Progress ] [ Financial Health ] [ Focus ]       │
-├───────────────────────────┬──────────────────────────────────┤
-│ 3. LEFT CONSOLE           │ 4. RIGHT CONSOLE                 │
-│    Active Flagship        │    Navigator · Liam              │
-│    Financial Weather      │    Mission Field                 │
-├───────────────────────────┴──────────────────────────────────┤
-│ 5. LOWER DECK                                                │
-│    Momentum Stream · Timeline Horizon · Archive Echoes       │
-└──────────────────────────────────────────────────────────────┘
-                  [ Command Dock — fixed, glassy ]
+Extend `Milestone` to:
+```ts
+type Milestone = {
+  id: string; title: string; description?: string;
+  done: boolean; progressContribution: number; // 0-100
+  completedAt?: string; notes?: string;
+}
 ```
+- Auto-compute mission `progress` from milestone contributions when any exist (else manual slider still works).
+- Add `lastActivityAt` updated on any mutation; `nextMilestoneId` derived (first incomplete).
+- Add `setPrimaryFlagship(id)` / `setSupportingFlagship(id)` enforcing **only one Primary** and **one Supporting** (auto-demote previous).
+- Add `updateMilestone(missionId, milestoneId, patch)` and `removeMilestone`.
 
-`max-w-[1680px]`, `px-10`, `gap-10`, `pb-32` so the dock never overlaps.
+### 2. Mission List Page (`src/routes/missions.tsx`)
 
-## Hero — the centerpiece
+Redesign the card + add a Navigator strip on top:
 
-- Remove `CommandCore` rings/ticks/radar entirely from the Bridge.
-- New component `CinematicHero` (replaces `CommandCore`'s slot):
-  - Soft layered nebula bloom (radial gradients, no canvas) — cyan top-left, violet bottom-right, deep navy base.
-  - Subtle parallax starfield (CSS background, two layers drifting slowly).
-  - New `HoloVessel.tsx` SVG: a slim personal starship — long fuselage, cockpit canopy, swept delta wings, twin engine nacelles with cyan glow plumes, soft rim-light, gentle 6s float + 12s yaw. Not a triangle, not an arrow, not an icon.
-  - Translucent "command glass" plate behind the directive line.
-  - Directive: large display type (~28px), e.g. _"Course set: {flagship.name}"_ — fallback _"Awaiting your first flagship."_
-  - Three large metric cards in a row beneath: **Mission Progress · Financial Health · Focus**. Each ~180px tall: big number (44px), label (14px, sentence case), thin progress bar, one-line context.
+- **Header**: keeps "Mission Command" title; adds counters chips (Active / Flagship / At Risk / Dormant).
+- **Navigator advisory panel** (placeholder logic): if active missions > 5 → "Captain, your fleet is overextended. Consider pausing or archiving."; if no flagship → "No Primary Flagship set. Choose your North Star."; if any Critical → flag.
+- **Filter bar**: Active / Flagship / All / Archived + class chips + health filter.
+- **Mission card** (richer cockpit tile):
+  - top row: class + domain (hud-text), flagship/supporting star icons
+  - title + 2-line story
+  - progress bar with % readout
+  - row of badges: Difficulty, Status, Health (colored), Priority
+  - **Next milestone**: "Next → {title}" or "All milestones complete"
+  - **Last activity**: relative time
+  - Quick actions row: Open · +Focus (logs momentum) · Complete · Archive
+  - Health-tinted left border accent.
 
-## Header (replaces `BridgeStatusBar`)
+### 3. Mission Detail Page (`src/routes/missions.$id.tsx`)
 
-- One line greeting: `Welcome aboard, Captain {callSign}.` (display font, ~22px).
-- Second line: Stardate `2026.166` · local time (mount-gated, no SSR mismatch).
-- Right side: 4 status chips (Vessel · Signal · Missions · Momentum) — pill, dot indicator, 13px label, soft glass.
+Rebuild into a cockpit:
 
-## Left console
+- **Mission banner** — full-width GlassPanel with class-themed gradient strip, large editable name, hud meta (class · difficulty · domain · priority), health/status badges, flagship star controls (Primary toggle, Supporting toggle — enforced single).
+- **Vital stats row** (4 mini-tiles): Progress %, Health, Status, Next Milestone.
+- **Two-column body**:
+  - Mission Story (textarea)
+  - Success Criteria (textarea)
+  - **Milestones panel** — richer:
+    - add row with title + contribution slider
+    - each milestone: checkbox, title (editable), description, progress contribution badge, completedAt timestamp, notes textarea (collapsible)
+    - completing updates mission progress automatically
+  - Tasks panel (existing, slightly polished)
+  - Notes
+  - Risk Indicators
+- **Recovery Path panel** — when health is At Risk / Critical / Dormant, highlight. Shows the **5-step checklist** the user defined:
+  1. Review mission story
+  2. Pick one small next task
+  3. Start a 15-minute focus session
+  4. Update progress
+  5. Resume momentum
+  Each step is a checkbox (stored as `recoverySteps: boolean[5]`); a "Reset path" button. Free-form recovery notes textarea below. Includes a placeholder Navigator hint line ("Navigator will tailor this path as it learns your patterns.").
+- **Completion / archive controls** — sticky footer bar: Mark Complete · Archive · Decommission · Back to Missions.
 
-`FlagshipPanel` and `FinancialWeatherPanel` stacked, `gap-8`, large titles (24px), generous padding (`p-8`), `rounded-3xl`.
+### 4. Visual style
 
-## Right console
+- Reuse existing `GlassPanel`, `holo-border`, `text-gradient-cosmic`, hud-text — no new theme tokens.
+- Class accent gradients via a small `MISSION_CLASS_ACCENT` map in `src/lib/enums.ts` (e.g. Project → cyan→violet, Financial → emerald→cyan, Creative → fuchsia→violet, etc.) for the banner strip & card border.
+- Health-tinted glow on cards (uses existing `HEALTH_COLOR`).
+- Deep navy / cyan / violet only — no new colors hardcoded.
 
-`NavigatorPanel` (already has Liam portrait — keep, just resize portrait to 112px and soften halo) + Mission Field (existing inline list from `index.tsx`, moved into a `GlassPanel`).
+### 5. Out of scope (explicit)
 
-Navigator copy:
-- Title: _"Standing by, Captain."_
-- Body: _"You have {n} active missions. Pick one flagship for the next 90 minutes."_
-- Buttons: **Brief Me**, **Log Signal**.
+- Bridge layout, background, hero, Navigator panel — untouched.
+- Routes, stores for other modules, data shapes outside missions — untouched.
+- No real AI calls — Navigator copy is static placeholder logic based on counts/health.
 
-## Lower deck
-
-Three equal `GlassPanel`s in a 3-col grid: `MomentumFeed`, Timeline Horizon (existing inline), `ArchiveEchoesPanel`.
-
-## Visual + typography pass
-
-`src/styles.css`:
-- Body 15px, line-height 1.6.
-- `.hud-text`: only used for chips/eyebrows, 12px, +1 tracking. Strip all-caps elsewhere.
-- New `.display-xl` (28px), `.display-lg` (22px) display-font utilities.
-- Soften glass: lower border opacity, larger blur, `rounded-3xl`.
-- Remove ring-tick CSS no longer used.
-
-`GlassPanel`: bigger default padding (`p-7`), softer border, keep brackets but at 40% opacity.
-
-`CommandDock`: keep height `h-16`, ensure page wrapper has `pb-32`; active Bridge item gets a soft inner glow (no harsh ring).
-
-## Files
-
-Edit:
-- `src/routes/index.tsx` — full recomposition into the 5 sections above.
-- `src/components/bridge/BridgeStatusBar.tsx` — rewrite as cinematic header.
-- `src/components/bridge/NavigatorPanel.tsx` — shrink portrait, simplify copy, ensure two buttons.
-- `src/components/shell/GlassPanel.tsx` — soften, larger radius/padding.
-- `src/components/shell/CommandDock.tsx` — softer active state, confirm spacing.
-- `src/styles.css` — typography scale + glass tokens.
-
-Create:
-- `src/components/bridge/CinematicHero.tsx` — nebula + vessel + directive + 3 metric cards.
-- `src/components/bridge/HoloVessel.tsx` — SVG personal starship with engine glow and float animation.
-- `src/components/bridge/MetricCard.tsx` — large readable metric card used in the hero.
-
-Delete from Bridge usage (files stay in repo, just unused on `/`):
-- `CommandCore.tsx`, `Vessel.tsx`, `SectorPulsePanel.tsx`, `UniverseStatePanel.tsx`.
-
-No new dependencies. No route, store, or data changes. Runtime 504 on `@radix-ui/react-tabs` will self-heal on next dev restart after the edits land; if not, restart the dev server.
-
-## Out of scope
-
-- Real WebGL/3D vessel (stays as crafted SVG for SSR + perf).
-- Other routes.
-- Mobile-specific composition (stacks responsively, desktop is the target).
+### Files touched
+- `src/lib/enums.ts` — add `MISSION_CLASS_ACCENT` map.
+- `src/stores/missions.ts` — extend Milestone, flagship enforcement, recovery steps, lastActivityAt, auto-progress.
+- `src/routes/missions.tsx` — redesigned list + Navigator strip.
+- `src/routes/missions.$id.tsx` — full Mission Command detail rebuild.
+- (Possibly) `src/components/bridge/MissionCard.tsx` shared card extraction — only if reuse is clean; otherwise inline.
