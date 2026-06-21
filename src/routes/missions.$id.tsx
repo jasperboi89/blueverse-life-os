@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ArrowLeft, Check, ChevronDown, ChevronRight, Plus, Sparkles, Star, Trash2, X } from "lucide-react";
 import { GlassPanel } from "@/components/shell/GlassPanel";
 import { useMissions, RECOVERY_STEP_LABELS, type Mission } from "@/stores/missions";
