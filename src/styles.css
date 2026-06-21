@@ -532,3 +532,120 @@
     animation: none;
   }
 }
+
+/* ---- BlueVerse spatial cockpit rearranged patch ----
+   Keeps the immersive wraparound feeling, but returns panels to a stable
+   readable three-column command deck instead of absolute panes flying off-screen. */
+.bridge-command-wrap-rearranged {
+  width: min(100%, 1760px);
+  margin-inline: auto;
+  padding: clamp(24px, 3.2vh, 46px) clamp(20px, 4vw, 72px) 15rem;
+}
+
+.bridge-spatial-stage {
+  position: relative;
+  perspective: 1300px;
+  perspective-origin: 50% 46%;
+  transform-style: preserve-3d;
+  margin-top: clamp(2rem, 5vh, 4rem);
+}
+
+.bridge-spatial-stage::before {
+  content: "";
+  position: absolute;
+  inset: clamp(1rem, 2vh, 2rem) clamp(1rem, 3vw, 3rem) auto;
+  height: 55%;
+  pointer-events: none;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  border-top: 1px solid oklch(0.78 0.18 215 / 0.18);
+  border-left: 1px solid oklch(0.78 0.18 215 / 0.08);
+  border-right: 1px solid oklch(0.78 0.18 215 / 0.08);
+  transform: translateZ(-120px) rotateX(60deg);
+  opacity: 0.55;
+}
+
+.bridge-main-deck {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(290px, 390px) minmax(540px, 1fr) minmax(290px, 390px);
+  align-items: center;
+  gap: clamp(1.25rem, 2vw, 2.25rem);
+  transform-style: preserve-3d;
+}
+
+.bridge-center-column {
+  transform: translateZ(72px) scale(0.985);
+  transform-style: preserve-3d;
+  z-index: 4;
+}
+
+.bridge-side-column {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 2.2vh, 2rem);
+  transform-style: preserve-3d;
+  z-index: 5;
+}
+
+.bridge-side-column-left {
+  transform-origin: right center;
+  transform: translateZ(42px) rotateY(16deg) translateX(0.25rem);
+}
+
+.bridge-side-column-right {
+  transform-origin: left center;
+  transform: translateZ(42px) rotateY(-16deg) translateX(-0.25rem);
+}
+
+.bridge-lower-deck-organized {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.25rem, 2vw, 2rem);
+  margin-top: clamp(2rem, 5vh, 4rem);
+  transform: translateZ(50px) rotateX(3deg);
+  transform-origin: center top;
+  transform-style: preserve-3d;
+}
+
+.bridge-side-column .glass-panel,
+.bridge-lower-deck-organized .glass-panel {
+  background:
+    linear-gradient(135deg, oklch(0.22 0.08 270 / 0.54), oklch(0.13 0.06 280 / 0.42)),
+    radial-gradient(130% 90% at 10% 0%, oklch(0.65 0.20 220 / 0.12), transparent 60%);
+  border-color: oklch(0.78 0.18 215 / 0.28);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.10),
+    inset 0 -80px 110px -75px oklch(0.55 0.22 290 / 0.34),
+    0 22px 54px -18px oklch(0.04 0.05 270 / 0.78),
+    0 0 56px -30px oklch(0.70 0.20 220 / 0.55);
+}
+
+.bridge-side-column .glass-panel:hover,
+.bridge-lower-deck-organized .glass-panel:hover {
+  border-color: oklch(0.78 0.18 215 / 0.42);
+}
+
+@media (max-width: 1279px) {
+  .bridge-spatial-stage {
+    perspective: none;
+  }
+
+  .bridge-spatial-stage::before {
+    display: none;
+  }
+
+  .bridge-main-deck,
+  .bridge-lower-deck-organized {
+    grid-template-columns: 1fr;
+  }
+
+  .bridge-center-column,
+  .bridge-side-column-left,
+  .bridge-side-column-right,
+  .bridge-lower-deck-organized {
+    transform: none;
+  }
+}
