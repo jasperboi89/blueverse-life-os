@@ -33,6 +33,24 @@ export const HEALTH_COLOR: Record<MissionHealth, string> = {
   "Dormant": "text-muted-foreground",
 };
 
+export const HEALTH_DOT: Record<MissionHealth, string> = {
+  "Healthy": "bg-primary shadow-[0_0_10px_var(--primary)]",
+  "Needs Attention": "bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.7)]",
+  "At Risk": "bg-orange-400 shadow-[0_0_10px_rgba(251,146,60,0.7)]",
+  "Critical": "bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.8)]",
+  "Dormant": "bg-muted-foreground/60",
+};
+
+export const MISSION_CLASS_ACCENT: Record<MissionClass, string> = {
+  Project:      "from-cyan-400/60 via-sky-500/40 to-violet-500/60",
+  Financial:    "from-emerald-400/60 via-teal-400/40 to-cyan-500/60",
+  Growth:       "from-sky-400/60 via-indigo-400/40 to-violet-500/60",
+  Creative:     "from-fuchsia-400/60 via-violet-500/40 to-indigo-500/60",
+  Relationship: "from-rose-400/60 via-fuchsia-400/40 to-violet-500/60",
+  Milestone:    "from-amber-300/60 via-orange-400/40 to-rose-500/60",
+  Maintenance:  "from-slate-400/50 via-cyan-500/30 to-sky-500/50",
+};
+
 export const WEATHER_GRADIENT: Record<FinancialWeather, string> = {
   Clear:    "from-cyan-400/40 to-blue-500/30",
   Stable:   "from-emerald-400/30 to-cyan-500/30",
