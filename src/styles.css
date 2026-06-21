@@ -539,15 +539,15 @@
 .bridge-command-wrap-rearranged {
   width: min(100%, 1760px);
   margin-inline: auto;
-  padding: clamp(24px, 3.2vh, 46px) clamp(20px, 4vw, 72px) 15rem;
+  padding: clamp(24px, 3.2vh, 46px) clamp(20px, 4vw, 72px) 18rem;
 }
 
 .bridge-spatial-stage {
   position: relative;
-  perspective: 1300px;
-  perspective-origin: 50% 46%;
+  perspective: 1400px;
+  perspective-origin: 50% 48%;
   transform-style: preserve-3d;
-  margin-top: clamp(2rem, 5vh, 4rem);
+  margin-top: clamp(2rem, 4vh, 3.5rem);
 }
 
 .bridge-spatial-stage::before {
@@ -568,14 +568,14 @@
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: minmax(290px, 390px) minmax(540px, 1fr) minmax(290px, 390px);
-  align-items: center;
-  gap: clamp(1.25rem, 2vw, 2.25rem);
+  grid-template-columns: minmax(260px, 320px) minmax(560px, 1fr) minmax(260px, 320px);
+  align-items: start;
+  gap: clamp(1.5rem, 2.6vw, 2.75rem);
   transform-style: preserve-3d;
 }
 
 .bridge-center-column {
-  transform: translateZ(72px) scale(0.985);
+  transform: translateZ(40px) scale(0.99);
   transform-style: preserve-3d;
   z-index: 4;
 }
@@ -590,12 +590,12 @@
 
 .bridge-side-column-left {
   transform-origin: right center;
-  transform: translateZ(42px) rotateY(16deg) translateX(0.25rem);
+  transform: translateZ(20px) rotateY(9deg) translateX(0.5rem);
 }
 
 .bridge-side-column-right {
   transform-origin: left center;
-  transform: translateZ(42px) rotateY(-16deg) translateX(-0.25rem);
+  transform: translateZ(20px) rotateY(-9deg) translateX(-0.5rem);
 }
 
 .bridge-lower-deck-organized {
@@ -604,8 +604,8 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(1.25rem, 2vw, 2rem);
-  margin-top: clamp(2rem, 5vh, 4rem);
-  transform: translateZ(50px) rotateX(3deg);
+  margin-top: clamp(2.5rem, 6vh, 5rem);
+  transform: translateZ(28px) rotateX(2.5deg);
   transform-origin: center top;
   transform-style: preserve-3d;
 }
@@ -628,7 +628,7 @@
   border-color: oklch(0.78 0.18 215 / 0.42);
 }
 
-@media (max-width: 1279px) {
+@media (max-width: 1023px) {
   .bridge-spatial-stage {
     perspective: none;
   }
