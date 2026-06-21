@@ -192,16 +192,7 @@ function MissionCard({ m }: { m: Mission }) {
     <GlassPanel className="group relative h-full overflow-hidden !p-0">
       <div className={`absolute left-0 top-0 h-full w-1 bg-gradient-to-b ${accent}`} />
       <div className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${accent} opacity-70`} />
-
-      {/* Full-card click surface */}
-      <Link
-        to="/missions/$id"
-        params={{ id: m.id }}
-        className="absolute inset-0 z-0"
-        aria-label={`Open mission ${m.name}`}
-      />
-
-      <div className="relative z-[1] p-5">
+      <Link to="/missions/$id" params={{ id: m.id }} className="block p-5">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
           <div className="min-w-0">
             <p className="hud-text truncate">{m.missionClass} · {m.domain} · {m.difficulty}</p>
@@ -250,7 +241,7 @@ function MissionCard({ m }: { m: Mission }) {
             <p className="truncate text-foreground/90">{timeAgo(lastActivity)}</p>
           </div>
         </div>
-      </div>
+      </Link>
 
       <div className="relative z-[1] flex items-center justify-end gap-1.5 border-t border-border/40 bg-background/20 px-3 py-2">
         <Button
