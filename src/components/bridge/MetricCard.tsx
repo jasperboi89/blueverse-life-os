@@ -22,14 +22,14 @@ export function MetricCard({ label, value, caption, progress, hue = "cyan", clas
   return (
     <div
       className={cn(
-        "glass-panel relative overflow-hidden rounded-2xl px-6 py-5",
+        "glass-panel relative overflow-hidden rounded-2xl px-5 py-4",
         className,
       )}
       style={{ borderColor: h.ring }}
     >
       <p className="text-[13px] font-medium text-muted-foreground">{label}</p>
       <p
-        className="mt-2 font-display text-[40px] leading-none tracking-tight"
+        className="mt-2 font-display text-[34px] leading-none tracking-tight"
         style={{ color: h.color, textShadow: `0 0 22px ${h.color}` }}
       >
         {value}

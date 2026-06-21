@@ -539,7 +539,7 @@
 .bridge-command-wrap-rearranged {
   width: min(100%, 1760px);
   margin-inline: auto;
-  padding: clamp(24px, 3.2vh, 46px) clamp(20px, 4vw, 72px) 18rem;
+  padding: clamp(24px, 3.2vh, 46px) clamp(20px, 4vw, 72px) 22rem;
 }
 
 .bridge-spatial-stage {
@@ -610,7 +610,19 @@
   transform-style: preserve-3d;
 }
 
-.bridge-side-column .glass-panel,
+.bridge-side-column .glass-panel {
+  background:
+    linear-gradient(135deg, oklch(0.22 0.08 270 / 0.42), oklch(0.13 0.06 280 / 0.32)),
+    radial-gradient(130% 90% at 10% 0%, oklch(0.65 0.20 220 / 0.10), transparent 60%);
+  border-color: oklch(0.78 0.18 215 / 0.22);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.10),
+    inset 0 -80px 110px -75px oklch(0.55 0.22 290 / 0.30),
+    0 22px 54px -18px oklch(0.04 0.05 270 / 0.60),
+    0 0 56px -30px oklch(0.70 0.20 220 / 0.42);
+  padding: 1.25rem;
+}
+
 .bridge-lower-deck-organized .glass-panel {
   background:
     linear-gradient(135deg, oklch(0.22 0.08 270 / 0.54), oklch(0.13 0.06 280 / 0.42)),
@@ -626,6 +638,15 @@
 .bridge-side-column .glass-panel:hover,
 .bridge-lower-deck-organized .glass-panel:hover {
   border-color: oklch(0.78 0.18 215 / 0.42);
+}
+
+/* Softer side-panel titles — prevent truncation, allow wrapping */
+.bridge-side-column .glass-panel header h3 {
+  font-size: 1.125rem;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: break-word;
+  text-wrap: balance;
 }
 
 @media (max-width: 1023px) {

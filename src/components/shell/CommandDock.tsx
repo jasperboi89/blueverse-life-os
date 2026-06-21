@@ -51,7 +51,7 @@ export function CommandDock() {
           ))}
         </ul>
       )}
-      <div className="glass-panel holo-border holo-sweep command-glow relative px-3 py-3 sm:px-4">
+      <div className="glass-panel holo-border holo-sweep relative px-3 py-3 sm:px-4">
         <ul className="flex max-w-[96vw] items-center gap-1.5 overflow-x-auto sm:gap-2">
           {items.map(({ to, label, icon: Icon }) => {
             const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
