@@ -38,7 +38,6 @@ function Bridge() {
 
   const active = missions.filter((m) => m.status === "Active");
   const overall = active.length ? Math.round(active.reduce((a, m) => a + m.progress, 0) / active.length) : 0;
-
   const financeIndex = Math.max(8, 100 - FINANCIAL_HEALTHS.indexOf(finance.health) * 22);
 
   const flagship = missions
@@ -57,42 +56,36 @@ function Bridge() {
     .slice(0, 3);
 
   return (
-    <div className="bridge-command-wrap">
+    <div className="bridge-command-wrap bridge-command-wrap-rearranged">
       <BridgeStatusBar callSign={callSign} />
 
-      <section className="bridge-cockpit-shell" aria-label="BlueVerse Bridge cockpit">
-        <div className="bridge-front-screen">
-          <CinematicHero
-            directive={directiveLine}
-            mission={overall}
-            finance={{
-              label: finance.health,
-              caption: `Weather · ${finance.weather}. ${financeIndex}% index.`,
-            }}
-            focus={focus}
-            missionCaption={
-              active.length
-                ? `${active.length} active mission${active.length === 1 ? "" : "s"} underway`
-                : "No active missions yet"
-            }
-            focusCaption="Tune in Settings · adjust as the day unfolds"
-          />
-        </div>
-
-        <aside className="bridge-pane-stack bridge-pane-stack-left" aria-label="Left cockpit command panes">
-          <div className="bridge-holo-pane bridge-holo-pane-left">
+      <section className="bridge-spatial-stage" aria-label="BlueVerse Bridge spatial cockpit">
+        <div className="bridge-main-deck">
+          <aside className="bridge-side-column bridge-side-column-left" aria-label="Left cockpit panes">
             <FlagshipPanel />
-          </div>
-          <div className="bridge-holo-pane bridge-holo-pane-left bridge-holo-pane-secondary">
             <FinancialWeatherPanel />
-          </div>
-        </aside>
+          </aside>
 
-        <aside className="bridge-pane-stack bridge-pane-stack-right" aria-label="Right cockpit command panes">
-          <div className="bridge-holo-pane bridge-holo-pane-right">
-            <NavigatorPanel />
+          <div className="bridge-center-column" aria-label="Central command view">
+            <CinematicHero
+              directive={directiveLine}
+              mission={overall}
+              finance={{
+                label: finance.health,
+                caption: `Weather · ${finance.weather}. ${financeIndex}% index.`,
+              }}
+              focus={focus}
+              missionCaption={
+                active.length
+                  ? `${active.length} active mission${active.length === 1 ? "" : "s"} underway`
+                  : "No active missions yet"
+              }
+              focusCaption="Tune in Settings · adjust as the day unfolds"
+            />
           </div>
-          <div className="bridge-holo-pane bridge-holo-pane-right bridge-holo-pane-secondary">
+
+          <aside className="bridge-side-column bridge-side-column-right" aria-label="Right cockpit panes">
+            <NavigatorPanel />
             <GlassPanel eyebrow="Mission Field" title={`${active.length} Active`}>
               {missions.length === 0 ? (
                 <EmptyState
@@ -118,63 +111,54 @@ function Bridge() {
                 </>
               )}
             </GlassPanel>
-          </div>
-        </aside>
+          </aside>
+        </div>
 
-        <div className="bridge-lower-deck" aria-label="Lower cockpit deck">
-          <div className="bridge-holo-pane bridge-holo-pane-floor bridge-holo-pane-left">
-            <GlassPanel
-              eyebrow="Momentum Stream"
-              title="Recent Motion"
-              action={
-                <Link
-                  to="/timeline"
-                  className="inline-flex items-center gap-1.5 text-[12px] text-primary hover:underline"
-                >
-                  Timeline <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              }
-            >
-              <MomentumFeed limit={5} />
-            </GlassPanel>
-          </div>
+        <div className="bridge-lower-deck-organized" aria-label="Lower cockpit deck">
+          <GlassPanel
+            eyebrow="Momentum Stream"
+            title="Recent Motion"
+            action={
+              <Link to="/timeline" className="inline-flex items-center gap-1.5 text-[12px] text-primary hover:underline">
+                Timeline <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            }
+          >
+            <MomentumFeed limit={5} />
+          </GlassPanel>
 
-          <div className="bridge-holo-pane bridge-holo-pane-floor bridge-holo-pane-center">
-            <GlassPanel eyebrow="Timeline Horizon" title="Approaching">
-              {upcoming.length === 0 ? (
-                <EmptyState
-                  icon={<Activity className="h-5 w-5 text-primary" />}
-                  title="Horizon clear."
-                  hint="Chart a due date on a mission to set a waypoint."
-                  cta={{ to: "/missions", label: "Set Waypoint" }}
-                />
-              ) : (
-                <ul className="space-y-3">
-                  {upcoming.map((m) => (
-                    <li key={m.id}>
-                      <Link
-                        to="/missions/$id"
-                        params={{ id: m.id }}
-                        className="block rounded-xl border border-primary/15 bg-primary/5 px-4 py-3 transition-colors hover:bg-primary/10"
-                      >
-                        <div className="flex items-center justify-between gap-3">
-                          <p className="truncate text-[15px] text-foreground">{m.name}</p>
-                          <Activity className="h-4 w-4 shrink-0 text-primary" />
-                        </div>
-                        <p className="mt-1.5 text-[12px] text-muted-foreground">
-                          {m.dueDate ? `In ${formatDistanceToNow(new Date(m.dueDate))}` : "Unscheduled"}
-                        </p>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </GlassPanel>
-          </div>
+          <GlassPanel eyebrow="Timeline Horizon" title="Approaching">
+            {upcoming.length === 0 ? (
+              <EmptyState
+                icon={<Activity className="h-5 w-5 text-primary" />}
+                title="Horizon clear."
+                hint="Chart a due date on a mission to set a waypoint."
+                cta={{ to: "/missions", label: "Set Waypoint" }}
+              />
+            ) : (
+              <ul className="space-y-3">
+                {upcoming.map((m) => (
+                  <li key={m.id}>
+                    <Link
+                      to="/missions/$id"
+                      params={{ id: m.id }}
+                      className="block rounded-xl border border-primary/15 bg-primary/5 px-4 py-3 transition-colors hover:bg-primary/10"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="truncate text-[15px] text-foreground">{m.name}</p>
+                        <Activity className="h-4 w-4 shrink-0 text-primary" />
+                      </div>
+                      <p className="mt-1.5 text-[12px] text-muted-foreground">
+                        {m.dueDate ? `In ${formatDistanceToNow(new Date(m.dueDate))}` : "Unscheduled"}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </GlassPanel>
 
-          <div className="bridge-holo-pane bridge-holo-pane-floor bridge-holo-pane-right">
-            <ArchiveEchoesPanel />
-          </div>
+          <ArchiveEchoesPanel />
         </div>
       </section>
     </div>
