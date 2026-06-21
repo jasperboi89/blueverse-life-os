@@ -243,12 +243,22 @@ function MissionCard({ m }: { m: Mission }) {
         </div>
       </Link>
 
-      <div className="flex items-center justify-end gap-1.5 border-t border-border/40 bg-background/20 px-3 py-2">
+      <div className="relative z-[1] flex items-center justify-end gap-1.5 border-t border-border/40 bg-background/20 px-3 py-2">
+        <Button
+          asChild
+          size="sm"
+          variant="ghost"
+          className="h-7 px-2 text-xs"
+        >
+          <Link to="/missions/$id" params={{ id: m.id }}>
+            <Target className="mr-1 h-3.5 w-3.5" /> Open
+          </Link>
+        </Button>
         <Button
           size="sm"
           variant="ghost"
           className="h-7 px-2 text-xs"
-          onClick={(e) => { e.preventDefault(); log("mission", `Focus pulse: ${m.name}`); toast("Logged a focus pulse"); }}
+          onClick={(e) => { e.stopPropagation(); e.preventDefault(); log("mission", `Focus pulse: ${m.name}`); toast("Logged a focus pulse"); }}
         >
           <Flame className="mr-1 h-3.5 w-3.5" /> Focus
         </Button>
@@ -256,7 +266,7 @@ function MissionCard({ m }: { m: Mission }) {
           size="sm"
           variant="ghost"
           className="h-7 px-2 text-xs"
-          onClick={(e) => { e.preventDefault(); complete(m.id); log("mission", `Completed: ${m.name}`); toast.success("Mission complete"); }}
+          onClick={(e) => { e.stopPropagation(); e.preventDefault(); complete(m.id); log("mission", `Completed: ${m.name}`); toast.success("Mission complete"); }}
         >
           <CheckCircle2 className="mr-1 h-3.5 w-3.5" /> Complete
         </Button>
@@ -264,7 +274,7 @@ function MissionCard({ m }: { m: Mission }) {
           size="sm"
           variant="ghost"
           className="h-7 px-2 text-xs"
-          onClick={(e) => { e.preventDefault(); archive(m.id); log("mission", `Archived: ${m.name}`); toast("Archived"); }}
+          onClick={(e) => { e.stopPropagation(); e.preventDefault(); archive(m.id); log("mission", `Archived: ${m.name}`); toast("Archived"); }}
         >
           <Archive className="mr-1 h-3.5 w-3.5" /> Archive
         </Button>
