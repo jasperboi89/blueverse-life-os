@@ -17,33 +17,47 @@ export function NebulaBackground() {
     let w = (canvas.width = window.innerWidth * devicePixelRatio);
     let h = (canvas.height = window.innerHeight * devicePixelRatio);
 
-    const stars = Array.from({ length: 180 }, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: Math.random() * 1.4 + 0.2,
-      a: Math.random(),
-      s: Math.random() * 0.015 + 0.003,
-    }));
+    const makeStars = () =>
+      Array.from({ length: 180 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.4 + 0.2,
+        a: Math.random(),
+        s: Math.random() * 0.015 + 0.003,
+      }));
+    let stars = makeStars();
 
-    const handle = () => {
-      w = canvas.width = window.innerWidth * devicePixelRatio;
-      h = canvas.height = window.innerHeight * devicePixelRatio;
-    };
-    window.addEventListener("resize", handle);
-
-    const tick = () => {
+    const draw = () => {
       ctx.clearRect(0, 0, w, h);
       for (const s of stars) {
-        s.a += s.s;
         const alpha = 0.3 + Math.abs(Math.sin(s.a)) * 0.6;
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r * devicePixelRatio, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(180, 220, 255, ${alpha})`;
         ctx.fill();
       }
+    };
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const handle = () => {
+      w = canvas.width = window.innerWidth * devicePixelRatio;
+      h = canvas.height = window.innerHeight * devicePixelRatio;
+      stars = makeStars();
+      if (reducedMotion) draw();
+    };
+    window.addEventListener("resize", handle);
+
+    const tick = () => {
+      for (const s of stars) s.a += s.s;
+      draw();
       raf = requestAnimationFrame(tick);
     };
-    tick();
+    if (reducedMotion) {
+      draw(); // static starfield, no twinkle loop
+    } else {
+      tick();
+    }
 
     return () => {
       cancelAnimationFrame(raf);
@@ -78,9 +92,31 @@ export function NebulaBackground() {
         viewBox="0 0 1400 1400"
         fill="none"
       >
-        <circle cx="700" cy="700" r="380" stroke="currentColor" strokeWidth="1" className="text-primary" />
-        <circle cx="700" cy="700" r="520" stroke="currentColor" strokeWidth="1" strokeDasharray="2 8" className="text-primary" />
-        <circle cx="700" cy="700" r="660" stroke="currentColor" strokeWidth="1" className="text-accent" />
+        <circle
+          cx="700"
+          cy="700"
+          r="380"
+          stroke="currentColor"
+          strokeWidth="1"
+          className="text-primary"
+        />
+        <circle
+          cx="700"
+          cy="700"
+          r="520"
+          stroke="currentColor"
+          strokeWidth="1"
+          strokeDasharray="2 8"
+          className="text-primary"
+        />
+        <circle
+          cx="700"
+          cy="700"
+          r="660"
+          stroke="currentColor"
+          strokeWidth="1"
+          className="text-accent"
+        />
       </svg>
 
       {/* diagonal light sweep */}

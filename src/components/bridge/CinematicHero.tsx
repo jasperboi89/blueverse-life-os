@@ -11,7 +11,12 @@ type Props = {
 };
 
 export function CinematicHero({
-  directive, mission, finance, focus, missionCaption, focusCaption,
+  directive,
+  mission,
+  finance,
+  focus,
+  missionCaption,
+  focusCaption,
 }: Props) {
   return (
     <section className="relative w-full">
@@ -23,13 +28,10 @@ export function CinematicHero({
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="holo-pane w-full rounded-2xl border border-white/15 bg-[oklch(0.10_0.06_270/0.35)] px-8 py-5 text-center shadow-[0_16px_60px_-16px_oklch(0.10_0.06_270/0.55)] backdrop-blur-2xl"
         >
-          <p className="text-[12px] tracking-[0.35em] text-primary/90">DIRECTIVE</p>
-          <p className="mt-2 font-display text-2xl text-foreground sm:text-[30px]">
-            {directive}
-          </p>
+          <p className="text-xs tracking-[0.35em] text-primary/90">DIRECTIVE</p>
+          <p className="mt-2 font-display text-2xl text-foreground sm:text-[30px]">{directive}</p>
         </motion.div>
       </div>
-
 
       {/* Metric trio floating over the floor of the lounge */}
       <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-3">

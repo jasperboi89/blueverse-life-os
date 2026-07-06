@@ -16,8 +16,10 @@ export function NavigatorPresence() {
           className="h-full w-full object-cover"
           style={{ animation: "core-pulse 5s ease-in-out infinite" }}
         />
-        <span className="absolute right-0 bottom-0 h-2.5 w-2.5 rounded-full bg-primary shadow-[0_0_8px_var(--primary)]"
-          style={{ animation: "signal-blink 2.4s ease-in-out infinite" }} />
+        <span
+          className="absolute right-0 bottom-0 h-2.5 w-2.5 rounded-full bg-primary shadow-[0_0_8px_var(--primary)]"
+          style={{ animation: "signal-blink 2.4s ease-in-out infinite" }}
+        />
       </div>
       <div className="min-w-0">
         <p className="hud-text leading-tight">Navigator · {name}</p>
@@ -26,4 +28,3 @@ export function NavigatorPresence() {
     </div>
   );
 }
-

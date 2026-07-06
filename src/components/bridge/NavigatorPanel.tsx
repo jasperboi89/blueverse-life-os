@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
-import { Sparkles, MessageCircle } from "lucide-react";
+import { Sparkles, Target } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { GlassPanel } from "@/components/shell/GlassPanel";
 import { useSettings } from "@/stores/settings";
-import { useMissions } from "@/stores/missions";
+import { useMissions, activeMissions } from "@/stores/missions";
 import navigatorAsset from "@/assets/navigator-liam.png.asset.json";
 import { Button } from "@/components/ui/button";
 
@@ -12,13 +13,13 @@ export function NavigatorPanel() {
   const missions = useMissions((s) => s.missions);
 
   // future: adaptive — replace with real Navigator inference
-  const active = missions.filter((m) => m.status === "Active");
+  const active = activeMissions(missions);
   const recommendation =
     active.length === 0
       ? "No active mission. A small step today is still motion."
       : active.length === 1
-      ? `Focus the bridge on “${active[0].name}.” Single-target days build momentum fastest.`
-      : `You have ${active.length} active missions. Pick one flagship for the next 90 minutes.`;
+        ? `Focus the bridge on “${active[0].name}.” Single-target days build momentum fastest.`
+        : `You have ${active.length} active missions. Pick one flagship for the next 90 minutes.`;
   // shrink hero portrait per redesign
 
   return (
@@ -32,8 +33,7 @@ export function NavigatorPanel() {
           <div
             className="pointer-events-none absolute -inset-5 rounded-full"
             style={{
-              background:
-                "radial-gradient(circle, oklch(0.78 0.18 215 / 0.55), transparent 70%)",
+              background: "radial-gradient(circle, oklch(0.78 0.18 215 / 0.55), transparent 70%)",
               filter: "blur(14px)",
               animation: "core-pulse 4s ease-in-out infinite",
             }}
@@ -50,11 +50,7 @@ export function NavigatorPanel() {
             transition={{ duration: 7, ease: "linear", repeat: Infinity }}
           />
           <div className="relative h-28 w-28 overflow-hidden rounded-full ring-2 ring-primary/50 shadow-[0_0_22px_var(--primary)]">
-            <img
-              src={navigatorAsset.url}
-              alt={name}
-              className="h-full w-full object-cover"
-            />
+            <img src={navigatorAsset.url} alt={name} className="h-full w-full object-cover" />
             <div
               className="pointer-events-none absolute inset-0"
               style={{
@@ -89,21 +85,21 @@ export function NavigatorPanel() {
 
         <div className="min-w-0 flex-1">
           <p className="hud-text text-primary">Calm channel · {callSign}</p>
-          <p className="mt-3 text-[15px] leading-relaxed text-foreground/90">
-            “{recommendation}”
-          </p>
+          <p className="mt-3 text-[15px] leading-relaxed text-foreground/90">“{recommendation}”</p>
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-3">
         <Button
+          asChild
           variant="outline"
           size="default"
           className="border-primary/30 bg-primary/10 text-foreground hover:bg-primary/20"
-          onClick={() => window.dispatchEvent(new CustomEvent("blueverse:quick-capture"))}
         >
-          <MessageCircle className="mr-2 h-4 w-4" />
-          Brief Me
+          <Link to="/missions">
+            <Target className="mr-2 h-4 w-4" />
+            Open Missions
+          </Link>
         </Button>
         <Button
           variant="outline"

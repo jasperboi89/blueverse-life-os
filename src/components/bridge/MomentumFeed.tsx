@@ -22,11 +22,14 @@ export function MomentumFeed({ limit = 8 }: { limit?: number }) {
       {events.map((e) => {
         const Icon = ICON[e.kind];
         return (
-          <li key={e.id} className="flex items-start gap-3 rounded-lg border border-primary/15 bg-primary/5 px-3 py-2">
+          <li
+            key={e.id}
+            className="flex items-start gap-3 rounded-lg border border-primary/15 bg-primary/5 px-3 py-2"
+          >
             <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm text-foreground">{e.text}</p>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              <p className="text-2xs uppercase tracking-wider text-muted-foreground">
                 {formatDistanceToNow(new Date(e.at), { addSuffix: true })}
               </p>
             </div>

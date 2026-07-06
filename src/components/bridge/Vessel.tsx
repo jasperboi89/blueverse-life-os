@@ -23,9 +23,19 @@ export function Vessel({ progress, label = "Mission Progress" }: Props) {
             <stop offset="100%" stopColor="oklch(0.70 0.22 295)" />
           </linearGradient>
         </defs>
-        <circle cx="50" cy="50" r="46" fill="none" stroke="oklch(0.78 0.18 215 / 0.12)" strokeWidth="1.5" />
+        <circle
+          cx="50"
+          cy="50"
+          r="46"
+          fill="none"
+          stroke="oklch(0.78 0.18 215 / 0.12)"
+          strokeWidth="1.5"
+        />
         <motion.circle
-          cx="50" cy="50" r="46" fill="none"
+          cx="50"
+          cy="50"
+          r="46"
+          fill="none"
           stroke="url(#arc)"
           strokeWidth="1.8"
           strokeLinecap="round"
@@ -43,7 +53,10 @@ export function Vessel({ progress, label = "Mission Progress" }: Props) {
           background: "var(--gradient-core)",
           boxShadow: "var(--shadow-holo)",
         }}
-        animate={{ scale: [1, 1.04, 1], filter: ["brightness(1)", "brightness(1.18)", "brightness(1)"] }}
+        animate={{
+          scale: [1, 1.04, 1],
+          filter: ["brightness(1)", "brightness(1.18)", "brightness(1)"],
+        }}
         transition={{ duration: 5, ease: "easeInOut", repeat: Infinity }}
       >
         <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_30%,oklch(1_0_0/0.35),transparent_45%)]" />

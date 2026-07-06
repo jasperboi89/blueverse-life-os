@@ -63,8 +63,8 @@ export function seedIfEmpty() {
 
   const finance = useFinance.getState();
   if (finance.bills.length === 0) {
-    finance.addBill({ name: "Rent",        amount: 1450, dueDay: 1,  category: "Housing" });
-    finance.addBill({ name: "Internet",    amount: 65,   dueDay: 12, category: "Utilities" });
+    finance.addBill({ name: "Rent", amount: 1450, dueDay: 1, category: "Housing" });
+    finance.addBill({ name: "Internet", amount: 65, dueDay: 12, category: "Utilities" });
     finance.addBill({ name: "Subscriptions", amount: 48, dueDay: 20, category: "Software" });
     finance.addIncome({ source: "Primary Salary", amount: 4200, cadence: "Monthly" });
     finance.addDebt({ name: "Credit Card", balance: 1850, rate: 19.99, minPayment: 75 });
