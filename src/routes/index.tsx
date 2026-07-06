@@ -8,25 +8,21 @@ import { NavigatorPanel } from "@/components/bridge/NavigatorPanel";
 import { ArchiveEchoesPanel } from "@/components/bridge/ArchiveEchoesPanel";
 import { MomentumFeed } from "@/components/bridge/MomentumFeed";
 import { GlassPanel } from "@/components/shell/GlassPanel";
-import { useMissions } from "@/stores/missions";
+import { EmptyState } from "@/components/shell/form";
+import { useMissions, activeMissions, flagshipMission } from "@/stores/missions";
 import { useFinance } from "@/stores/finance";
 import { useSettings } from "@/stores/settings";
-import { FINANCIAL_HEALTHS } from "@/lib/enums";
+import { financialHealthToIndex } from "@/lib/enums";
+import { pageHead } from "@/lib/seo";
 import { formatDistanceToNow } from "date-fns";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Bridge · BlueVerse" },
-      {
-        name: "description",
-        content:
-          "Step into your cinematic command lounge. Vessel, navigator, missions and momentum — calm, spacious, alive.",
-      },
-      { property: "og:title", content: "Bridge · BlueVerse" },
-      { property: "og:description", content: "Your starship bridge for a deliberate life." },
-    ],
-  }),
+  head: () =>
+    pageHead(
+      "Bridge · BlueVerse",
+      "Step into your cinematic command lounge. Vessel, navigator, missions and momentum — calm, spacious, alive.",
+      "Your starship bridge for a deliberate life.",
+    ),
   component: Bridge,
 });
 
@@ -36,13 +32,13 @@ function Bridge() {
   const focus = useSettings((s) => s.focusScore);
   const callSign = useSettings((s) => s.callSign);
 
-  const active = missions.filter((m) => m.status === "Active");
-  const overall = active.length ? Math.round(active.reduce((a, m) => a + m.progress, 0) / active.length) : 0;
-  const financeIndex = Math.max(8, 100 - FINANCIAL_HEALTHS.indexOf(finance.health) * 22);
+  const active = activeMissions(missions);
+  const overall = active.length
+    ? Math.round(active.reduce((a, m) => a + m.progress, 0) / active.length)
+    : 0;
+  const financeIndex = financialHealthToIndex(finance.health);
 
-  const flagship = missions
-    .filter((m) => m.flagship && m.status !== "Archived")
-    .sort((a, b) => b.progress - a.progress)[0];
+  const flagship = flagshipMission(missions);
 
   const directiveLine = flagship
     ? `Course set: ${flagship.name}`
@@ -56,12 +52,15 @@ function Bridge() {
     .slice(0, 3);
 
   return (
-    <div className="bridge-command-wrap bridge-command-wrap-rearranged">
+    <div className="bridge-command-wrap">
       <BridgeStatusBar callSign={callSign} />
 
       <section className="bridge-spatial-stage" aria-label="BlueVerse Bridge spatial cockpit">
         <div className="bridge-main-deck">
-          <aside className="bridge-side-column bridge-side-column-left" aria-label="Left cockpit panes">
+          <aside
+            className="bridge-side-column bridge-side-column-left"
+            aria-label="Left cockpit panes"
+          >
             <FlagshipPanel />
             <FinancialWeatherPanel />
           </aside>
@@ -84,7 +83,10 @@ function Bridge() {
             />
           </div>
 
-          <aside className="bridge-side-column bridge-side-column-right" aria-label="Right cockpit panes">
+          <aside
+            className="bridge-side-column bridge-side-column-right"
+            aria-label="Right cockpit panes"
+          >
             <NavigatorPanel />
             <GlassPanel eyebrow="Mission Field" title={`${active.length} Active`}>
               {missions.length === 0 ? (
@@ -98,13 +100,22 @@ function Bridge() {
                 <>
                   <ul className="grid grid-cols-2 gap-3 text-[15px]">
                     <FieldRow label="Active" value={active.length} accent />
-                    <FieldRow label="Planned" value={missions.filter((m) => m.status === "Planned").length} />
-                    <FieldRow label="Paused" value={missions.filter((m) => m.status === "Paused").length} />
-                    <FieldRow label="Completed" value={missions.filter((m) => m.status === "Completed").length} />
+                    <FieldRow
+                      label="Planned"
+                      value={missions.filter((m) => m.status === "Planned").length}
+                    />
+                    <FieldRow
+                      label="Paused"
+                      value={missions.filter((m) => m.status === "Paused").length}
+                    />
+                    <FieldRow
+                      label="Completed"
+                      value={missions.filter((m) => m.status === "Completed").length}
+                    />
                   </ul>
                   <Link
                     to="/missions"
-                    className="mt-5 inline-flex items-center gap-1.5 text-[13px] text-primary hover:underline"
+                    className="mt-5 inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
                   >
                     All missions <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
@@ -119,7 +130,10 @@ function Bridge() {
             eyebrow="Momentum Stream"
             title="Recent Motion"
             action={
-              <Link to="/timeline" className="inline-flex items-center gap-1.5 text-[12px] text-primary hover:underline">
+              <Link
+                to="/timeline"
+                className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+              >
                 Timeline <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             }
@@ -148,8 +162,10 @@ function Bridge() {
                         <p className="truncate text-[15px] text-foreground">{m.name}</p>
                         <Activity className="h-4 w-4 shrink-0 text-primary" />
                       </div>
-                      <p className="mt-1.5 text-[12px] text-muted-foreground">
-                        {m.dueDate ? `In ${formatDistanceToNow(new Date(m.dueDate))}` : "Unscheduled"}
+                      <p className="mt-1.5 text-xs text-muted-foreground">
+                        {m.dueDate
+                          ? `In ${formatDistanceToNow(new Date(m.dueDate))}`
+                          : "Unscheduled"}
                       </p>
                     </Link>
                   </li>
@@ -168,35 +184,10 @@ function Bridge() {
 function FieldRow({ label, value, accent }: { label: string; value: number; accent?: boolean }) {
   return (
     <li className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.03] px-4 py-3">
-      <span className="text-[13px] text-muted-foreground">{label}</span>
-      <span className={`font-display text-xl ${accent ? "text-primary" : "text-foreground"}`}>{value}</span>
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className={`font-display text-xl ${accent ? "text-primary" : "text-foreground"}`}>
+        {value}
+      </span>
     </li>
-  );
-}
-
-function EmptyState({
-  icon,
-  title,
-  hint,
-  cta,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  hint: string;
-  cta?: { to: string; label: string };
-}) {
-  return (
-    <div className="flex flex-col items-start gap-3 py-2">
-      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-primary/25 bg-primary/10">
-        {icon}
-      </div>
-      <p className="font-display text-base text-foreground">{title}</p>
-      <p className="text-[14px] text-muted-foreground">{hint}</p>
-      {cta && (
-        <Link to={cta.to} className="mt-1 inline-flex items-center gap-1.5 text-[13px] text-primary hover:underline">
-          {cta.label} <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
-      )}
-    </div>
   );
 }

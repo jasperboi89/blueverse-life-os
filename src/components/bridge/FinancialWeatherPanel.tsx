@@ -24,12 +24,20 @@ export function FinancialWeatherPanel() {
       eyebrow="Financial Weather"
       title={finance.weather}
       action={
-        <Link to="/finance" className="text-xs font-display uppercase tracking-[0.2em] text-primary hover:underline inline-flex items-center gap-1">
+        <Link
+          to="/finance"
+          className="text-xs font-display uppercase tracking-[0.2em] text-primary hover:underline inline-flex items-center gap-1"
+        >
           Open <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       }
     >
-      <div className={cn("mb-3 flex items-center gap-3 rounded-xl bg-gradient-to-br p-3", WEATHER_GRADIENT[finance.weather])}>
+      <div
+        className={cn(
+          "mb-3 flex items-center gap-3 rounded-xl bg-gradient-to-br p-3",
+          WEATHER_GRADIENT[finance.weather],
+        )}
+      >
         <Icon className="h-8 w-8 text-foreground drop-shadow-[0_0_10px_currentColor]" />
         <div className="min-w-0">
           <p className="hud-text">Health</p>
@@ -44,7 +52,9 @@ export function FinancialWeatherPanel() {
             {upcoming.map((b) => (
               <li key={b.id} className="flex items-center justify-between gap-2">
                 <span className="truncate text-foreground">{b.name}</span>
-                <span className="shrink-0 text-xs text-muted-foreground">Day {b.dueDay} · ${b.amount.toLocaleString()}</span>
+                <span className="shrink-0 text-xs text-muted-foreground">
+                  Day {b.dueDay} · ${b.amount.toLocaleString()}
+                </span>
               </li>
             ))}
           </ul>

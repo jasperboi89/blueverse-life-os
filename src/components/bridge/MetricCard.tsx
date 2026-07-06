@@ -3,9 +3,9 @@ import { cn } from "@/lib/utils";
 type Hue = "cyan" | "violet" | "azure";
 
 const HUE: Record<Hue, { color: string; ring: string }> = {
-  cyan:   { color: "oklch(0.88 0.18 210)", ring: "oklch(0.78 0.18 215 / 0.45)" },
+  cyan: { color: "oklch(0.88 0.18 210)", ring: "oklch(0.78 0.18 215 / 0.45)" },
   violet: { color: "oklch(0.82 0.20 295)", ring: "oklch(0.68 0.22 295 / 0.45)" },
-  azure:  { color: "oklch(0.90 0.14 195)", ring: "oklch(0.78 0.16 200 / 0.45)" },
+  azure: { color: "oklch(0.90 0.14 195)", ring: "oklch(0.78 0.16 200 / 0.45)" },
 };
 
 type Props = {
@@ -21,13 +21,10 @@ export function MetricCard({ label, value, caption, progress, hue = "cyan", clas
   const h = HUE[hue];
   return (
     <div
-      className={cn(
-        "glass-panel relative overflow-hidden rounded-2xl px-5 py-4",
-        className,
-      )}
+      className={cn("glass-panel relative overflow-hidden rounded-2xl px-5 py-4", className)}
       style={{ borderColor: h.ring }}
     >
-      <p className="text-[13px] font-medium text-muted-foreground">{label}</p>
+      <p className="text-sm font-medium text-muted-foreground">{label}</p>
       <p
         className="mt-2 font-display text-[34px] leading-none tracking-tight"
         style={{ color: h.color, textShadow: `0 0 22px ${h.color}` }}
@@ -46,9 +43,7 @@ export function MetricCard({ label, value, caption, progress, hue = "cyan", clas
           />
         </div>
       )}
-      {caption && (
-        <p className="mt-3 text-[13px] text-muted-foreground/90">{caption}</p>
-      )}
+      {caption && <p className="mt-3 text-sm text-muted-foreground/90">{caption}</p>}
       <div
         className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full opacity-40 blur-2xl"
         style={{ background: h.color }}

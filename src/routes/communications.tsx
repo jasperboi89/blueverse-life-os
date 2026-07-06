@@ -1,15 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { GlassPanel } from "@/components/shell/GlassPanel";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/communications")({
-  head: () => ({
-    meta: [
-      { title: "Communications · BlueVerse" },
-      { name: "description", content: "Inbound and outbound signal. Future bridge channel." },
-      { property: "og:title", content: "Communications · BlueVerse" },
-      { property: "og:description", content: "The bridge channel." },
-    ],
-  }),
+  head: () =>
+    pageHead(
+      "Communications · BlueVerse",
+      "Inbound and outbound signal. Future bridge channel.",
+      "The bridge channel.",
+    ),
   component: () => (
     <div className="space-y-6">
       <div>
@@ -18,8 +17,8 @@ export const Route = createFileRoute("/communications")({
       </div>
       <GlassPanel eyebrow="Coming online" title="Signal Inbox">
         <p className="text-sm text-muted-foreground">
-          {/* future: adaptive */} Daily briefings from your Navigator, drafts to important people, and the
-          outbound channel will live here.
+          {/* future: adaptive */} Daily briefings from your Navigator, drafts to important people,
+          and the outbound channel will live here.
         </p>
       </GlassPanel>
     </div>

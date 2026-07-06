@@ -42,7 +42,9 @@ export function GlassPanel({
               </p>
             )}
             {title && (
-              <h3 className="mt-1.5 truncate font-display text-xl text-foreground sm:text-2xl">{title}</h3>
+              <h3 className="mt-1.5 truncate font-display text-xl text-foreground sm:text-2xl">
+                {title}
+              </h3>
             )}
           </div>
           {action && <div className="shrink-0">{action}</div>}
@@ -54,8 +56,7 @@ export function GlassPanel({
 }
 
 function CornerBrackets() {
-  const base =
-    "pointer-events-none absolute h-3.5 w-3.5 border-primary/70";
+  const base = "pointer-events-none absolute h-3.5 w-3.5 border-primary/70";
   return (
     <>
       <span className={cn(base, "top-2 left-2 border-t border-l")} />

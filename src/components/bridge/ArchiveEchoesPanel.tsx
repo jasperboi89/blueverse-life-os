@@ -14,15 +14,16 @@ export function ArchiveEchoesPanel() {
       eyebrow="Archive Echoes"
       title="Memory Vault"
       action={
-        <Link to="/archive" className="text-xs font-display uppercase tracking-[0.2em] text-primary hover:underline inline-flex items-center gap-1">
+        <Link
+          to="/archive"
+          className="text-xs font-display uppercase tracking-[0.2em] text-primary hover:underline inline-flex items-center gap-1"
+        >
           Open <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       }
     >
       {!last && !lastAudio ? (
-        <p className="text-sm text-muted-foreground">
-          Archive quiet. First memory capsule awaits.
-        </p>
+        <p className="text-sm text-muted-foreground">Archive quiet. First memory capsule awaits.</p>
       ) : (
         <div className="space-y-2">
           {last && (

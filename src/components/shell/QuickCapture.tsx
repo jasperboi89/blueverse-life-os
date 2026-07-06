@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -25,10 +31,16 @@ export function QuickCapture() {
 
   const submit = () => {
     if (!body.trim()) return;
-    addMemory({ title: title.trim() || "Untitled signal", body: body.trim(), tags: ["quick-capture"] });
+    addMemory({
+      title: title.trim() || "Untitled signal",
+      body: body.trim(),
+      tags: ["quick-capture"],
+    });
     log("archive", `Captured: ${title.trim() || body.trim().slice(0, 40)}`);
     toast.success("Signal captured to Archive");
-    setTitle(""); setBody(""); setOpen(false);
+    setTitle("");
+    setBody("");
+    setOpen(false);
   };
 
   return (
@@ -47,7 +59,11 @@ export function QuickCapture() {
           <DialogTitle className="text-gradient-cosmic">Quick Capture</DialogTitle>
           <DialogDescription>Drop a signal into the Archive. Refine it later.</DialogDescription>
         </DialogHeader>
-        <Input placeholder="Title (optional)" value={title} onChange={(e) => setTitle(e.target.value)} />
+        <Input
+          placeholder="Title (optional)"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
         <Textarea
           placeholder="What's the signal?"
           value={body}
@@ -56,7 +72,9 @@ export function QuickCapture() {
           autoFocus
         />
         <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button variant="ghost" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
           <Button onClick={submit}>Transmit</Button>
         </DialogFooter>
       </DialogContent>

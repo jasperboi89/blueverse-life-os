@@ -1,6 +1,13 @@
 import { nanoid } from "nanoid";
 import { makePersistentStore } from "./persist";
-import type { MissionClass, MissionDifficulty, MissionHealth, MissionPriority, MissionStatus, Sector } from "@/lib/enums";
+import type {
+  MissionClass,
+  MissionDifficulty,
+  MissionHealth,
+  MissionPriority,
+  MissionStatus,
+  Sector,
+} from "@/lib/enums";
 
 export type Milestone = {
   id: string;
@@ -34,7 +41,7 @@ export type Mission = {
   status: MissionStatus;
   progress: number; // 0-100
   health: MissionHealth;
-  flagship: boolean;            // primary flagship
+  flagship: boolean; // primary flagship
   supportingFlagship: boolean;
   story: string;
   successCriteria: string;
@@ -52,7 +59,14 @@ export type Mission = {
 
 type AddInput = Omit<
   Mission,
-  "id" | "createdAt" | "updatedAt" | "lastActivityAt" | "milestones" | "tasks" | "risks" | "recoverySteps"
+  | "id"
+  | "createdAt"
+  | "updatedAt"
+  | "lastActivityAt"
+  | "milestones"
+  | "tasks"
+  | "risks"
+  | "recoverySteps"
 >;
 
 type State = {
@@ -75,6 +89,16 @@ type State = {
   complete: (id: string) => void;
   archive: (id: string) => void;
 };
+
+/** Missions currently in the "Active" status. */
+export const activeMissions = (missions: Mission[]) =>
+  missions.filter((m) => m.status === "Active");
+
+/** The primary flagship (highest-progress, non-archived), or undefined. */
+export const flagshipMission = (missions: Mission[]) =>
+  missions
+    .filter((m) => m.flagship && m.status !== "Archived")
+    .sort((a, b) => b.progress - a.progress)[0];
 
 const emptyRecovery = (): RecoverySteps => [false, false, false, false, false];
 
@@ -105,8 +129,10 @@ export const useMissions = makePersistentStore<State>("missions", (set, get) => 
       lastActivityAt: now,
     };
     let next = [mission, ...get().missions];
-    if (mission.flagship) next = next.map((x) => (x.id === mission.id ? x : { ...x, flagship: false }));
-    if (mission.supportingFlagship) next = next.map((x) => (x.id === mission.id ? x : { ...x, supportingFlagship: false }));
+    if (mission.flagship)
+      next = next.map((x) => (x.id === mission.id ? x : { ...x, flagship: false }));
+    if (mission.supportingFlagship)
+      next = next.map((x) => (x.id === mission.id ? x : { ...x, supportingFlagship: false }));
     set({ missions: next });
     return mission;
   },
@@ -128,7 +154,10 @@ export const useMissions = makePersistentStore<State>("missions", (set, get) => 
   addMilestone: (id, title, contribution = 20) => {
     const m = get().missions.find((x) => x.id === id);
     if (!m) return;
-    const milestones = [...m.milestones, { id: nanoid(), title, done: false, progressContribution: contribution }];
+    const milestones = [
+      ...m.milestones,
+      { id: nanoid(), title, done: false, progressContribution: contribution },
+    ];
     get().update(id, { milestones, progress: recomputeProgress(milestones, m.progress) });
   },
   updateMilestone: (id, mid, patch) => {

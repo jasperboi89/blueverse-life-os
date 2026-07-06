@@ -1,3 +1,4 @@
+import { useSyncExternalStore } from "react";
 import { create, type StateCreator } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
@@ -16,5 +17,25 @@ export function makePersistentStore<T>(
       ),
       skipHydration: !isBrowser,
     }),
+  );
+}
+
+type PersistedStore = {
+  persist: {
+    hasHydrated: () => boolean;
+    onFinishHydration: (fn: () => void) => () => void;
+  };
+};
+
+/**
+ * True once the store has been rehydrated from localStorage (StoreBoot
+ * triggers this after mount). Lets views distinguish "still loading"
+ * from "genuinely empty" — always false during SSR.
+ */
+export function useStoreHydrated(store: PersistedStore) {
+  return useSyncExternalStore(
+    (onChange) => store.persist.onFinishHydration(onChange),
+    () => store.persist.hasHydrated(),
+    () => false,
   );
 }

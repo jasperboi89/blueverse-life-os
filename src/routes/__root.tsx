@@ -58,7 +58,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <p className="mt-2 text-sm text-muted-foreground">Recalibrate and continue your mission.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
-            onClick={() => { router.invalidate(); reset(); }}
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
             Recalibrate
@@ -81,17 +84,37 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "BlueVerse Life OS" },
-      { name: "description", content: "Your personal operating system — bridge, missions, finance, archive, and constitution in one cosmic command deck." },
+      {
+        name: "description",
+        content:
+          "Your personal operating system — bridge, missions, finance, archive, and constitution in one cosmic command deck.",
+      },
       { name: "author", content: "BlueVerse" },
       { name: "theme-color", content: "#0a1130" },
       { property: "og:title", content: "BlueVerse Life OS" },
-      { property: "og:description", content: "Your personal operating system — bridge, missions, finance, archive, and constitution in one cosmic command deck." },
+      {
+        property: "og:description",
+        content:
+          "Your personal operating system — bridge, missions, finance, archive, and constitution in one cosmic command deck.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: "BlueVerse Life OS" },
-      { name: "twitter:description", content: "Your personal operating system — bridge, missions, finance, archive, and constitution in one cosmic command deck." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/db53b580-c5d6-4078-b7a4-60b114e09720/id-preview-faac1f88--b1a08d76-1548-4f2b-967e-294ffa7ed92c.lovable.app-1782030257118.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/db53b580-c5d6-4078-b7a4-60b114e09720/id-preview-faac1f88--b1a08d76-1548-4f2b-967e-294ffa7ed92c.lovable.app-1782030257118.png" },
+      {
+        name: "twitter:description",
+        content:
+          "Your personal operating system — bridge, missions, finance, archive, and constitution in one cosmic command deck.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/db53b580-c5d6-4078-b7a4-60b114e09720/id-preview-faac1f88--b1a08d76-1548-4f2b-967e-294ffa7ed92c.lovable.app-1782030257118.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/db53b580-c5d6-4078-b7a4-60b114e09720/id-preview-faac1f88--b1a08d76-1548-4f2b-967e-294ffa7ed92c.lovable.app-1782030257118.png",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -148,7 +171,7 @@ function RootComponent() {
         <main
           className={
             isBridge
-              ? "relative z-10 w-full pb-40"
+              ? "relative z-10 w-full"
               : "mx-auto w-full max-w-7xl px-3 pt-4 pb-36 sm:px-6 sm:pt-6"
           }
         >
@@ -166,4 +189,3 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
-

@@ -1,16 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { GlassPanel } from "@/components/shell/GlassPanel";
 import { MomentumFeed } from "@/components/bridge/MomentumFeed";
+import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/timeline")({
-  head: () => ({
-    meta: [
-      { title: "Timeline · BlueVerse" },
-      { name: "description", content: "Every signal, in order. Your momentum field." },
-      { property: "og:title", content: "Timeline · BlueVerse" },
-      { property: "og:description", content: "Your momentum field, unfolded." },
-    ],
-  }),
+  head: () =>
+    pageHead(
+      "Timeline · BlueVerse",
+      "Every signal, in order. Your momentum field.",
+      "Your momentum field, unfolded.",
+    ),
   component: TimelinePage,
 });
 

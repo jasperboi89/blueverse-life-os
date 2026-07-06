@@ -17,6 +17,11 @@ type State = {
 export const useMomentum = makePersistentStore<State>("momentum", (set, get) => ({
   events: [],
   log: (kind, text) =>
-    set({ events: [{ id: nanoid(), at: new Date().toISOString(), kind, text }, ...get().events].slice(0, 200) }),
+    set({
+      events: [{ id: nanoid(), at: new Date().toISOString(), kind, text }, ...get().events].slice(
+        0,
+        200,
+      ),
+    }),
   clear: () => set({ events: [] }),
 }));

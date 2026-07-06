@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { Radio, Activity, Compass, Sparkles } from "lucide-react";
-import { useMissions } from "@/stores/missions";
+import { useMissions, activeMissions } from "@/stores/missions";
 import { useMomentum } from "@/stores/momentum";
 
 export function BridgeStatusBar({ callSign }: { callSign: string }) {
@@ -12,7 +12,7 @@ export function BridgeStatusBar({ callSign }: { callSign: string }) {
     return () => clearInterval(i);
   }, []);
 
-  const active = useMissions((s) => s.missions.filter((m) => m.status === "Active").length);
+  const active = useMissions((s) => activeMissions(s.missions).length);
   const recent = useMomentum((s) => s.events.length);
 
   const stardate = now ? format(now, "yyyy.MM.dd") : "—";
@@ -25,7 +25,7 @@ export function BridgeStatusBar({ callSign }: { callSign: string }) {
           Welcome aboard, <span className="text-gradient-flare">{callSign}</span>.
         </h1>
         <p
-          className="mt-2 flex items-center gap-3 text-[14px] text-muted-foreground"
+          className="mt-2 flex items-center gap-3 text-sm text-muted-foreground"
           suppressHydrationWarning
         >
           <span
@@ -46,27 +46,35 @@ export function BridgeStatusBar({ callSign }: { callSign: string }) {
   );
 }
 
+const CHIP_TONES = {
+  cyan: { color: "oklch(0.88 0.16 210)", border: "oklch(0.88 0.16 210 / 0.35)" },
+  violet: { color: "oklch(0.82 0.20 295)", border: "oklch(0.82 0.20 295 / 0.35)" },
+} as const;
+
 function Chip({
-  icon: Icon, label, value, tone,
+  icon: Icon,
+  label,
+  value,
+  tone,
 }: {
   icon: typeof Radio;
   label: string;
   value: string;
-  tone: "cyan" | "violet";
+  tone: keyof typeof CHIP_TONES;
 }) {
-  const color = tone === "cyan" ? "oklch(0.88 0.16 210)" : "oklch(0.82 0.20 295)";
+  const { color, border } = CHIP_TONES[tone];
   return (
     <div
       className="inline-flex items-center gap-2.5 rounded-full border bg-white/[0.04] px-4 py-2 backdrop-blur-xl"
-      style={{ borderColor: `${color.slice(0, -1)} / 0.35)` }}
+      style={{ borderColor: border }}
     >
       <span
         className="inline-flex h-2 w-2 rounded-full"
         style={{ background: color, boxShadow: `0 0 10px ${color}` }}
       />
       <Icon className="h-4 w-4" style={{ color }} />
-      <span className="text-[13px] text-muted-foreground">{label}</span>
-      <span className="text-[13px] font-medium text-foreground">{value}</span>
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="text-sm font-medium text-foreground">{value}</span>
     </div>
   );
 }

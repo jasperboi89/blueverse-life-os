@@ -3,9 +3,27 @@ import { makePersistentStore } from "./persist";
 import type { FinancialHealth, FinancialWeather } from "@/lib/enums";
 
 export type Bill = { id: string; name: string; amount: number; dueDay: number; category?: string };
-export type Income = { id: string; source: string; amount: number; cadence: "Weekly" | "Bi-weekly" | "Monthly" | "One-time"; nextDate?: string };
-export type Debt = { id: string; name: string; balance: number; rate?: number; minPayment?: number };
-export type SavingsGoal = { id: string; name: string; target: number; current: number; deadline?: string };
+export type Income = {
+  id: string;
+  source: string;
+  amount: number;
+  cadence: "Weekly" | "Bi-weekly" | "Monthly" | "One-time";
+  nextDate?: string;
+};
+export type Debt = {
+  id: string;
+  name: string;
+  balance: number;
+  rate?: number;
+  minPayment?: number;
+};
+export type SavingsGoal = {
+  id: string;
+  name: string;
+  target: number;
+  current: number;
+  deadline?: string;
+};
 
 type State = {
   weather: FinancialWeather;

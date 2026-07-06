@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import { makePersistentStore } from "./persist";
 
 export type Revision = { id: string; at: string; summary: string };
@@ -22,7 +23,7 @@ export const useConstitution = makePersistentStore<State>("constitution", (set, 
   pushRevision: (summary) =>
     set({
       revisions: [
-        { id: crypto.randomUUID?.() ?? String(Date.now()), at: new Date().toISOString(), summary },
+        { id: nanoid(), at: new Date().toISOString(), summary },
         ...get().revisions,
       ].slice(0, 50),
     }),
