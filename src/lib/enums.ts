@@ -61,6 +61,26 @@ export const AUDIO_CAPSULE_TYPES = [
 ] as const;
 export type AudioCapsuleType = (typeof AUDIO_CAPSULE_TYPES)[number];
 
+export const RISK_KINDS = ["Deadline", "Financial", "Momentum", "Dependency", "Focus"] as const;
+export type RiskKind = (typeof RISK_KINDS)[number];
+
+export const RISK_LEVELS = ["None", "Watch", "Elevated", "Critical"] as const;
+export type RiskLevel = (typeof RISK_LEVELS)[number];
+
+export const RISK_LEVEL_COLOR: Record<RiskLevel, string> = {
+  None: "text-muted-foreground",
+  Watch: "text-chart-4",
+  Elevated: "text-chart-5",
+  Critical: "text-destructive",
+};
+
+export const RISK_LEVEL_DOT: Record<RiskLevel, string> = {
+  None: "bg-muted-foreground/40",
+  Watch: "bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.7)]",
+  Elevated: "bg-orange-400 shadow-[0_0_10px_rgba(251,146,60,0.7)]",
+  Critical: "bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.8)]",
+};
+
 export const HEALTH_COLOR: Record<MissionHealth, string> = {
   Healthy: "text-primary",
   "Needs Attention": "text-chart-4",
