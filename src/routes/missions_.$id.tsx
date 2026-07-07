@@ -47,12 +47,17 @@ import {
   MISSION_HEALTHS,
   MISSION_PRIORITIES,
   MISSION_STATUSES,
+  RISK_KINDS,
+  RISK_LEVELS,
+  RISK_LEVEL_COLOR,
+  RISK_LEVEL_DOT,
   SECTORS,
+  type RiskLevel,
 } from "@/lib/enums";
 import { pageHead } from "@/lib/seo";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/missions/$id")({
+export const Route = createFileRoute("/missions_/$id")({
   head: ({ params }) => pageHead("Mission · BlueVerse", `Mission detail ${params.id}`),
   component: MissionDetail,
   notFoundComponent: () => (
@@ -75,6 +80,8 @@ function MissionDetail() {
     toggleMilestone,
     addTask,
     toggleTask,
+    removeTask,
+    setRiskIndicator,
     complete,
     archive,
     remove,
@@ -107,11 +114,86 @@ function MissionDetail() {
   }
 
   const accent = MISSION_CLASS_ACCENT[m.missionClass];
-  const msDone = m.milestones.filter((x) => x.done).length;
-  const taskDone = m.tasks.filter((x) => x.done).length;
-  const nextMs = m.milestones.find((x) => !x.done);
+  // Safe defaults: missions persisted before these fields existed must still render.
+  const milestones = m.milestones ?? [];
+  const tasks = m.tasks ?? [];
+  const risks = m.risks ?? [];
+  const riskIndicators = m.riskIndicators ?? {};
+  const msDone = milestones.filter((x) => x.done).length;
+  const taskDone = tasks.filter((x) => x.done).length;
+  const nextMs = milestones.find((x) => !x.done);
   const recoverySteps = m.recoverySteps ?? [false, false, false, false, false];
   const needsRecovery = m.health === "At Risk" || m.health === "Critical" || m.health === "Dormant";
+
+  // One panel, two placements: prominent (right under the banner) when the
+  // mission needs recovery, tucked at the end of the body otherwise.
+  const recoveryPanel = (prominent: boolean) => (
+    <GlassPanel
+      eyebrow="Contingency"
+      title="Recovery Path"
+      variant={prominent ? "hero" : "default"}
+      className={`lg:col-span-2 ${prominent ? "ring-1 ring-orange-400/50" : ""}`}
+    >
+      {prominent && (
+        <div className="mb-3 flex items-start gap-2 rounded-lg border border-orange-400/30 bg-orange-400/5 px-3 py-2 text-sm text-orange-200">
+          <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          <p>
+            Mission health is <strong>{m.health}</strong>. Walk the five-step path to resume
+            momentum.
+          </p>
+        </div>
+      )}
+
+      <ol className="space-y-2">
+        {RECOVERY_STEP_LABELS.map((label, idx) => (
+          <li key={idx}>
+            <button
+              onClick={() => toggleRecoveryStep(m.id, idx)}
+              className="flex w-full items-center gap-3 rounded-md border border-border/40 bg-background/20 px-3 py-2 text-left transition-colors hover:bg-primary/10"
+            >
+              <span
+                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${recoverySteps[idx] ? "border-primary bg-primary/30" : "border-primary/40"}`}
+              >
+                {recoverySteps[idx] ? (
+                  <Check className="h-3 w-3 text-primary" />
+                ) : (
+                  <span className="text-2xs text-muted-foreground">{idx + 1}</span>
+                )}
+              </span>
+              <span
+                className={
+                  recoverySteps[idx] ? "text-muted-foreground line-through" : "text-foreground"
+                }
+              >
+                {label}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ol>
+
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs text-muted-foreground">
+          Navigator will tailor this path as it learns your patterns.
+        </p>
+        <Button size="sm" variant="ghost" onClick={() => resetRecoverySteps(m.id)}>
+          Reset path
+        </Button>
+      </div>
+
+      <div className="mt-3">
+        <Field label="Recovery notes">
+          <AutosaveTextarea
+            key={m.id}
+            rows={3}
+            value={m.recoveryPath}
+            onCommit={(recoveryPath) => update(m.id, { recoveryPath })}
+            placeholder="If this goes sideways, the way back is…"
+          />
+        </Field>
+      </div>
+    </GlassPanel>
+  );
 
   return (
     <div className="space-y-6 pb-32">
@@ -189,7 +271,7 @@ function MissionDetail() {
           <div className="mt-5">
             <div className="flex items-center justify-between">
               <Label className="hud-text">Progress · {m.progress}%</Label>
-              {m.milestones.length > 0 && (
+              {milestones.length > 0 && (
                 <span className="text-xs text-muted-foreground">Auto from milestones</span>
               )}
             </div>
@@ -198,7 +280,7 @@ function MissionDetail() {
               onValueChange={([v]) => update(m.id, { progress: v })}
               max={100}
               step={1}
-              disabled={m.milestones.length > 0}
+              disabled={milestones.length > 0}
               className="mt-2"
             />
             <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-primary/15">
@@ -226,7 +308,7 @@ function MissionDetail() {
             <Stat label="Status" value={m.status} />
             <Stat
               label="Next milestone"
-              value={nextMs ? nextMs.title : m.milestones.length ? "All complete" : "—"}
+              value={nextMs ? nextMs.title : milestones.length ? "All complete" : "—"}
             />
           </div>
 
@@ -274,9 +356,32 @@ function MissionDetail() {
                 onChange={(v) => update(m.id, { status: v as Mission["status"] })}
               />
             </Field>
+            <Field label="Due date">
+              <div className="flex gap-2">
+                <Input
+                  type="date"
+                  value={m.dueDate ? m.dueDate.slice(0, 10) : ""}
+                  onChange={(e) => update(m.id, { dueDate: e.target.value || undefined })}
+                  className="bg-background/40"
+                />
+                {m.dueDate && (
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    aria-label="Clear due date"
+                    onClick={() => update(m.id, { dueDate: undefined })}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            </Field>
           </div>
         </div>
       </GlassPanel>
+
+      {/* Recovery Path surfaces to the top when the mission needs attention */}
+      {needsRecovery && recoveryPanel(true)}
 
       {/* BODY */}
       <div className="grid gap-6 lg:grid-cols-2">
@@ -303,7 +408,7 @@ function MissionDetail() {
         {/* MILESTONES */}
         <GlassPanel
           eyebrow="Beats"
-          title={`Milestones · ${msDone}/${m.milestones.length}`}
+          title={`Milestones · ${msDone}/${milestones.length}`}
           className="lg:col-span-2"
         >
           <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto]">
@@ -345,12 +450,12 @@ function MissionDetail() {
           </div>
 
           <ul className="mt-4 space-y-2">
-            {m.milestones.length === 0 && (
+            {milestones.length === 0 && (
               <li className="text-sm text-muted-foreground">
                 No milestones yet. Break this mission into beats.
               </li>
             )}
-            {m.milestones.map((x) => {
+            {milestones.map((x) => {
               const isOpen = expandedMs === x.id;
               return (
                 <li key={x.id} className="rounded-lg border border-border/40 bg-background/20">
@@ -444,7 +549,7 @@ function MissionDetail() {
         </GlassPanel>
 
         {/* TASKS */}
-        <GlassPanel eyebrow="Action" title={`Tasks · ${taskDone}/${m.tasks.length}`}>
+        <GlassPanel eyebrow="Action" title={`Tasks · ${taskDone}/${tasks.length}`}>
           <div className="flex gap-2">
             <Input
               value={newTask}
@@ -471,25 +576,30 @@ function MissionDetail() {
             </Button>
           </div>
           <ul className="mt-3 space-y-1.5">
-            {m.tasks.length === 0 && (
-              <li className="text-sm text-muted-foreground">No tasks yet.</li>
-            )}
-            {m.tasks.map((x) => (
-              <li key={x.id}>
+            {tasks.length === 0 && <li className="text-sm text-muted-foreground">No tasks yet.</li>}
+            {tasks.map((x) => (
+              <li key={x.id} className="flex items-center gap-1">
                 <button
                   onClick={() => toggleTask(m.id, x.id)}
-                  className="flex w-full items-center gap-2 rounded-md px-2 py-1 hover:bg-primary/10"
+                  className="flex min-w-0 flex-1 items-center gap-2 rounded-md px-2 py-1 text-left hover:bg-primary/10"
                 >
                   <span
-                    className={`flex h-4 w-4 items-center justify-center rounded border ${x.done ? "border-primary bg-primary/30" : "border-primary/40"}`}
+                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${x.done ? "border-primary bg-primary/30" : "border-primary/40"}`}
                   >
                     {x.done && <Check className="h-3 w-3 text-primary" />}
                   </span>
                   <span
-                    className={x.done ? "text-muted-foreground line-through" : "text-foreground"}
+                    className={`truncate ${x.done ? "text-muted-foreground line-through" : "text-foreground"}`}
                   >
                     {x.title}
                   </span>
+                </button>
+                <button
+                  onClick={() => removeTask(m.id, x.id)}
+                  className="rounded p-1 text-muted-foreground hover:bg-destructive/20 hover:text-destructive"
+                  aria-label={`Remove task ${x.title}`}
+                >
+                  <X className="h-4 w-4" />
                 </button>
               </li>
             ))}
@@ -509,6 +619,30 @@ function MissionDetail() {
 
         {/* RISKS */}
         <GlassPanel eyebrow="Risk Field" title="Risk Indicators" className="lg:col-span-2">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {RISK_KINDS.map((kind) => {
+              const level: RiskLevel = riskIndicators[kind] ?? "None";
+              return (
+                <div key={kind} className="rounded-xl border border-border/40 bg-background/20 p-3">
+                  <p className="label-text flex items-center gap-2">
+                    <span
+                      className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${RISK_LEVEL_DOT[level]}`}
+                    />
+                    {kind}
+                  </p>
+                  <p className={`mt-1 font-display text-sm ${RISK_LEVEL_COLOR[level]}`}>{level}</p>
+                  <OptionSelect
+                    value={level}
+                    options={RISK_LEVELS}
+                    onChange={(v) => setRiskIndicator(m.id, kind, v as RiskLevel)}
+                    className="mt-2 h-8 w-full text-xs"
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          <p className="label-text mt-5 mb-2">Custom risk flags</p>
           <div className="flex gap-2">
             <Input
               value={newRisk}
@@ -516,7 +650,7 @@ function MissionDetail() {
               placeholder="Add risk"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && newRisk.trim()) {
-                  update(m.id, { risks: [...m.risks, newRisk.trim()] });
+                  update(m.id, { risks: [...risks, newRisk.trim()] });
                   setNewRisk("");
                 }
               }}
@@ -526,7 +660,7 @@ function MissionDetail() {
               aria-label="Add risk"
               onClick={() => {
                 if (newRisk.trim()) {
-                  update(m.id, { risks: [...m.risks, newRisk.trim()] });
+                  update(m.id, { risks: [...risks, newRisk.trim()] });
                   setNewRisk("");
                 }
               }}
@@ -535,15 +669,15 @@ function MissionDetail() {
             </Button>
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
-            {m.risks.length === 0 && (
+            {risks.length === 0 && (
               <p className="text-sm text-muted-foreground">No risks flagged.</p>
             )}
-            {m.risks.map((r, i) => (
+            {risks.map((r, i) => (
               <Badge
                 key={i}
                 variant="outline"
                 className="cursor-pointer bg-destructive/10 text-destructive hover:bg-destructive/20"
-                onClick={() => update(m.id, { risks: m.risks.filter((_, j) => j !== i) })}
+                onClick={() => update(m.id, { risks: risks.filter((_, j) => j !== i) })}
                 title="Click to remove"
               >
                 {r} <X className="ml-1 h-3 w-3" />
@@ -552,71 +686,8 @@ function MissionDetail() {
           </div>
         </GlassPanel>
 
-        {/* RECOVERY PATH */}
-        <GlassPanel
-          eyebrow="Contingency"
-          title="Recovery Path"
-          className={`lg:col-span-2 ${needsRecovery ? "ring-1 ring-orange-400/40" : ""}`}
-        >
-          {needsRecovery && (
-            <div className="mb-3 flex items-start gap-2 rounded-lg border border-orange-400/30 bg-orange-400/5 px-3 py-2 text-sm text-orange-200">
-              <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              <p>
-                Mission health is <strong>{m.health}</strong>. Walk the five-step path to resume
-                momentum.
-              </p>
-            </div>
-          )}
-
-          <ol className="space-y-2">
-            {RECOVERY_STEP_LABELS.map((label, idx) => (
-              <li key={idx}>
-                <button
-                  onClick={() => toggleRecoveryStep(m.id, idx)}
-                  className="flex w-full items-center gap-3 rounded-md border border-border/40 bg-background/20 px-3 py-2 text-left transition-colors hover:bg-primary/10"
-                >
-                  <span
-                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${recoverySteps[idx] ? "border-primary bg-primary/30" : "border-primary/40"}`}
-                  >
-                    {recoverySteps[idx] ? (
-                      <Check className="h-3 w-3 text-primary" />
-                    ) : (
-                      <span className="text-2xs text-muted-foreground">{idx + 1}</span>
-                    )}
-                  </span>
-                  <span
-                    className={
-                      recoverySteps[idx] ? "text-muted-foreground line-through" : "text-foreground"
-                    }
-                  >
-                    {label}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ol>
-
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs text-muted-foreground">
-              Navigator will tailor this path as it learns your patterns.
-            </p>
-            <Button size="sm" variant="ghost" onClick={() => resetRecoverySteps(m.id)}>
-              Reset path
-            </Button>
-          </div>
-
-          <div className="mt-3">
-            <Field label="Recovery notes">
-              <AutosaveTextarea
-                key={m.id}
-                rows={3}
-                value={m.recoveryPath}
-                onCommit={(recoveryPath) => update(m.id, { recoveryPath })}
-                placeholder="If this goes sideways, the way back is…"
-              />
-            </Field>
-          </div>
-        </GlassPanel>
+        {/* RECOVERY PATH — stays here while healthy; rendered above the body when not */}
+        {!needsRecovery && recoveryPanel(false)}
       </div>
 
       {/* COMPLETION CONTROLS */}

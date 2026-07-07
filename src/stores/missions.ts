@@ -6,6 +6,8 @@ import type {
   MissionHealth,
   MissionPriority,
   MissionStatus,
+  RiskKind,
+  RiskLevel,
   Sector,
 } from "@/lib/enums";
 
@@ -51,6 +53,9 @@ export type Mission = {
   recoveryPath: string;
   recoverySteps: RecoverySteps;
   risks: string[];
+  // Optional so missions persisted before this field existed stay valid;
+  // readers default missing entries to "None".
+  riskIndicators?: Partial<Record<RiskKind, RiskLevel>>;
   createdAt: string;
   updatedAt: string;
   lastActivityAt: string;
@@ -67,6 +72,7 @@ type AddInput = Omit<
   | "tasks"
   | "risks"
   | "recoverySteps"
+  | "riskIndicators"
 >;
 
 type State = {
@@ -80,6 +86,8 @@ type State = {
   toggleMilestone: (id: string, mid: string) => void;
   addTask: (id: string, title: string) => void;
   toggleTask: (id: string, tid: string) => void;
+  removeTask: (id: string, tid: string) => void;
+  setRiskIndicator: (id: string, kind: RiskKind, level: RiskLevel) => void;
   setPrimaryFlagship: (id: string) => void;
   setSupportingFlagship: (id: string) => void;
   clearPrimaryFlagship: (id: string) => void;
@@ -102,15 +110,18 @@ export const flagshipMission = (missions: Mission[]) =>
 
 const emptyRecovery = (): RecoverySteps => [false, false, false, false, false];
 
+/** Hard 0-100 bound for progress and milestone contributions. */
+const clampPct = (n: number) => Math.max(0, Math.min(100, Math.round(Number(n) || 0)));
+
 function recomputeProgress(milestones: Milestone[], fallback: number): number {
-  if (milestones.length === 0) return fallback;
+  if (milestones.length === 0) return clampPct(fallback);
   const total = milestones.reduce((s, x) => s + (x.progressContribution || 0), 0);
   if (total <= 0) {
     const done = milestones.filter((x) => x.done).length;
-    return Math.round((done / milestones.length) * 100);
+    return clampPct((done / milestones.length) * 100);
   }
   const earned = milestones.reduce((s, x) => s + (x.done ? x.progressContribution || 0 : 0), 0);
-  return Math.min(100, Math.round((earned / total) * 100));
+  return clampPct((earned / total) * 100);
 }
 
 export const useMissions = makePersistentStore<State>("missions", (set, get) => ({
@@ -143,6 +154,7 @@ export const useMissions = makePersistentStore<State>("missions", (set, get) => 
           ? {
               ...m,
               ...patch,
+              ...(patch.progress !== undefined ? { progress: clampPct(patch.progress) } : {}),
               updatedAt: new Date().toISOString(),
               lastActivityAt: new Date().toISOString(),
             }
@@ -155,27 +167,37 @@ export const useMissions = makePersistentStore<State>("missions", (set, get) => 
     const m = get().missions.find((x) => x.id === id);
     if (!m) return;
     const milestones = [
-      ...m.milestones,
-      { id: nanoid(), title, done: false, progressContribution: contribution },
+      ...(m.milestones ?? []),
+      { id: nanoid(), title, done: false, progressContribution: clampPct(contribution) },
     ];
     get().update(id, { milestones, progress: recomputeProgress(milestones, m.progress) });
   },
   updateMilestone: (id, mid, patch) => {
     const m = get().missions.find((x) => x.id === id);
     if (!m) return;
-    const milestones = m.milestones.map((x) => (x.id === mid ? { ...x, ...patch } : x));
+    const milestones = (m.milestones ?? []).map((x) =>
+      x.id === mid
+        ? {
+            ...x,
+            ...patch,
+            ...(patch.progressContribution !== undefined
+              ? { progressContribution: clampPct(patch.progressContribution) }
+              : {}),
+          }
+        : x,
+    );
     get().update(id, { milestones, progress: recomputeProgress(milestones, m.progress) });
   },
   removeMilestone: (id, mid) => {
     const m = get().missions.find((x) => x.id === id);
     if (!m) return;
-    const milestones = m.milestones.filter((x) => x.id !== mid);
+    const milestones = (m.milestones ?? []).filter((x) => x.id !== mid);
     get().update(id, { milestones, progress: recomputeProgress(milestones, m.progress) });
   },
   toggleMilestone: (id, mid) => {
     const m = get().missions.find((x) => x.id === id);
     if (!m) return;
-    const milestones = m.milestones.map((x) =>
+    const milestones = (m.milestones ?? []).map((x) =>
       x.id === mid
         ? { ...x, done: !x.done, completedAt: !x.done ? new Date().toISOString() : undefined }
         : x,
@@ -186,12 +208,24 @@ export const useMissions = makePersistentStore<State>("missions", (set, get) => 
   addTask: (id, title) => {
     const m = get().missions.find((x) => x.id === id);
     if (!m) return;
-    get().update(id, { tasks: [...m.tasks, { id: nanoid(), title, done: false }] });
+    get().update(id, { tasks: [...(m.tasks ?? []), { id: nanoid(), title, done: false }] });
   },
   toggleTask: (id, tid) => {
     const m = get().missions.find((x) => x.id === id);
     if (!m) return;
-    get().update(id, { tasks: m.tasks.map((x) => (x.id === tid ? { ...x, done: !x.done } : x)) });
+    get().update(id, {
+      tasks: (m.tasks ?? []).map((x) => (x.id === tid ? { ...x, done: !x.done } : x)),
+    });
+  },
+  removeTask: (id, tid) => {
+    const m = get().missions.find((x) => x.id === id);
+    if (!m) return;
+    get().update(id, { tasks: (m.tasks ?? []).filter((x) => x.id !== tid) });
+  },
+  setRiskIndicator: (id, kind, level) => {
+    const m = get().missions.find((x) => x.id === id);
+    if (!m) return;
+    get().update(id, { riskIndicators: { ...(m.riskIndicators ?? {}), [kind]: level } });
   },
 
   setPrimaryFlagship: (id) =>
